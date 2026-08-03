@@ -5,14 +5,27 @@
 #include "freertos/task.h"
 #include "esp_log.h"
 #include "esp_pm.h"
+#include "freertos/semphr.h"
 
 #include  "abstractions/abstractions.h"
 #include "debug/reboot.h"
 
-void app_main(void) {
+void trigger_null_ptr_crash() {
+
+    ESP_LOGI("SYS", "About to crash now...");
     vTaskDelay(pdMS_TO_TICKS(500));
-    volatile int *ptr = NULL;
-    
-    *ptr = 42;
-    panic_reboot_check();
+    volatile int* bad_ptr = NULL;
+    *bad_ptr = 42;
 }
+
+void app_main(void) {
+    printMutex = xSemaphoreCreateMutex();
+
+    ESP_LOGI("SYS", "About to show core dump...");
+    check_panic_data();
+    
+
+    
+}
+
+

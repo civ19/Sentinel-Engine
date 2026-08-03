@@ -26,8 +26,8 @@ void check_panic_data() {
             mutex_log('D', TAG, "SP: %p", sp);
             mutex_log('D', TAG, "Return Addr LR (A0): 0x%"  PRIx32, sum->ex_info.exc_a);
 
-            ESP_ERROR_CHECK(esp_core_dump_image_erase());
-            mutex_log('I', TAG, "Core dump flash partition erased successfully.");
+            
+            mutex_log('I', TAG, "Core dump flash partition NOTTT erased successfully.");
         } else mutex_log('I', TAG, "Clean Sys Boot. No crash data detected.");
         
         
@@ -36,13 +36,3 @@ void check_panic_data() {
     free(sum);
 }
 
-void panic_reboot_check() {
-    //extract core dump post boot before app starts
-    esp_reset_reason_t reas = esp_reset_reason();
-
-    if(reas == ESP_RST_PANIC) {
-        mutex_log('W', "SYS", "System Panic! Checking Panic Core Dump...");
-        check_panic_data();
-    }
-
-}   
