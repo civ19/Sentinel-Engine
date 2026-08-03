@@ -1,6 +1,6 @@
 idf_component_register(
     SRCS "main.c"
-         "pwm/reboot.c"
+         "debug/reboot.c"
          "wdt/wdt.c"
          "abstractions/abstractions.c"
     INCLUDE_DIRS "."

@@ -7,7 +7,6 @@
 SemaphoreHandle_t printMutex = NULL;
 
 
-
 void mutex_log(char type, const char *tag, const char *format, ...) {
     esp_log_level_t level;
     switch (type) {
