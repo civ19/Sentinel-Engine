@@ -1,7 +1,8 @@
 package com.sentinel.api;
 
-import jakarta.annotation.Resource;
+import org.springframework.core.io.Resource;
 import org.apache.logging.log4j.message.Message;
+import org.springframework.core.io.FileSystemResource;
 
 import java.io.File;
 import java.io.InputStream;
@@ -17,12 +18,17 @@ public class OTAService {
 
     private final String BIN_DIR = ".../firmware_binaries/";
 
-    public Resource getBinary(String ver) {
+    public OTAWrapper getBinary(String ver) throws Exception {
         //get path based on ver
         Path path = Paths.get(BIN_DIR + "sentinel_v" + ver + ".bin"); //path
         File bin_f = path.toFile(); //file obj from path. actual binary
 
         if(!bin_f.exists()) throw new FileNotFoundException("Firmware binary not found.");
+
+        String hash = calc_sha256(path);
+
+        Resource resource = new FileSystemResource(bin_f);
+        return new OTAWrapper(resource, hash);
     }
 
     public String calc_sha256(Path path) throws Exception {
