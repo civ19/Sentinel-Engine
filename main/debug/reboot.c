@@ -9,6 +9,7 @@
 static const char* TAG = "CORE_DUMP";
 static const char *TAGB = "BOOT";
 
+
 void check_panic_data() {
     void* sp = esp_cpu_get_sp();
     esp_core_dump_summary_t *sum = malloc(sizeof(esp_core_dump_summary_t));
@@ -17,18 +18,24 @@ void check_panic_data() {
         //if theres a summary => core dump availabvle
         //now we check if it was able to get the summary
         if(esp_core_dump_get_summary(sum) == ESP_OK) {
-            mutex_log('D', TAG, "--- Found a crash report from the previous session! ---");
-            mutex_log('D', TAG, "Died in task: %s", sum->exc_task);
-            mutex_log('D', TAG, "Exception Cause: %d", sum->ex_info.exc_cause);
-            mutex_log('D', TAG, "EPC Line: 0x%" PRIx32, sum->exc_pc);
+            if(xSemaphoreTake(printMutex, portMAX_DELAY)) {
+                ESP_LOGD(TAG, "--- Found a crash report from the previous session! ---");
+                ESP_LOGD(TAG, "Died in task: %s", sum->exc_task);
+                ESP_LOGD(TAG, "Exception Cause: %d", sum->ex_info.exc_cause);
+                ESP_LOGD(TAG, "Exception PC: 0x%" PRIx32, sum->exc_pc);
 
-            mutex_log('D', TAG, "Fault Address EXCVADDR: 0x%" PRIx32, sum->ex_info.exc_vaddr);
-            mutex_log('D', TAG, "SP: %p", sp);
-            mutex_log('D', TAG, "Return Addr LR (A0): 0x%"  PRIx32, sum->ex_info.exc_a);
-
+                ESP_LOGD(TAG, "Fault Address EXCVADDR: 0x%" PRIx32, sum->ex_info.exc_vaddr);
+                ESP_LOGD(TAG, "SP: %p", sp);
+                ESP_LOGD(TAG, "Return Addr LR (A0): 0x08%" PRIx32, sum->ex_info.exc_a);
+                
+                ESP_ERROR_CHECK(esp_core_dump_image_erase());
+                ESP_LOGI(TAG, "Core dump flash partition erased successfully.");
+            } 
+            else ESP_LOGI(TAG, "Clean Sys Boot. No crash data detected.");
             
-            mutex_log('I', TAG, "Core dump flash partition NOTTT erased successfully.");
-        } else mutex_log('I', TAG, "Clean Sys Boot. No crash data detected.");
+        } 
+
+        xSemaphoreGive(printMutex);
         
         
     }
