@@ -46,6 +46,10 @@ public class OTAService {
 
     }
 
+    public UpdateCheckResponse checkForUpdate() {
+
+    }
+
 
 
 
