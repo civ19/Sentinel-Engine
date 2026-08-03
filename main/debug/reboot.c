@@ -6,7 +6,8 @@
 #include "abstractions/abstractions.h"
 #include "reboot.h"
 
-const char* TAG = "CORE_DUMP";
+static const char* TAG = "CORE_DUMP";
+static const char *TAGB = "BOOT";
 
 void check_panic_data() {
     void* sp = esp_cpu_get_sp();
@@ -35,9 +36,13 @@ void check_panic_data() {
     free(sum);
 }
 
-void reset_reason() {
-    esp_get_rese
-}
-void panic_reboot_handler() {
-    
-}
+void panic_reboot_check() {
+    //extract core dump post boot before app starts
+    esp_reset_reason_t reas = esp_reset_reason();
+
+    if(reas == ESP_RST_PANIC) {
+        mutex_log('W', "SYS", "System Panic! Checking Panic Core Dump...");
+        check_panic_data();
+    }
+
+}   
