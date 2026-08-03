@@ -11,9 +11,12 @@ void wdt_init(void) {
         .trigger_panic = true,
     };
 
-    ESP_ERROR_CHECK(esp_task_wdt_init(&wdt_conf));
-    ESP_ERROR_CHECK(esp_task_wdt_add(NULL));
-
+    ESP_ERROR_CHECK(esp_task_wdt_reconfigure(&wdt_conf));
+    if(test_handle != NULL) ESP_ERROR_CHECK(esp_task_wdt_add(test_handle));
 
 }
 
+
+void wdt_test_task(void *pv) {
+    while(1);
+}

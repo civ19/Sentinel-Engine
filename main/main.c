@@ -9,6 +9,7 @@
 
 #include  "abstractions/abstractions.h"
 #include "debug/reboot.h"
+#include "wdt/wdt.h"
 
 void trigger_null_ptr_crash() {
 
@@ -24,6 +25,7 @@ void app_main(void) {
     ESP_LOGI("SYS", "About to show core dump...");
     check_panic_data();
     
+    xTaskCreatePinnedToCore(wdt_test_task, "wdtTest", 4096, NULL, 2, &test_handle, 0);
 
     
 }
