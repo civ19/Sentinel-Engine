@@ -7,9 +7,17 @@
 #include "abstractions/abstractions.h"
 
 static const char* TAG = "OTA";
+esp_http_client_handle_t client_handle;
 
-void manage_endpoints(void) {
+void manage_endpoints(esp_http_client_handle_t client) {
+    mutex_log('I', TAG, "Attempting to sync data over HTTPS...");
+
+    esp_err_t ret = esp_http_client_perform(&client); //acts as a courier. goes to our spring server, endpoints and all
+
+    if(ret == ESP_OK) mutex_log('I', "ESP Connected to server!");
+
     
+
 }
 static esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
     switch(evt->event_id) {
@@ -32,14 +40,12 @@ void init_http_client(void) {
         
     };
 
-    esp_http_client_handle_t http_handle = esp_http_client_init(&http_conf);
+    client_handle = esp_http_client_init(&http_conf);
 
-    if(http_handle == NULL) {
+    if(client_handle == NULL) {
         mutex_log('E', TAG, "Failed to allocate esp_http_client memory handle.");
         return;
     }
-
-    
 
 }
 
