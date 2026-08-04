@@ -1,8 +1,10 @@
 package com.sentinel.api;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.apache.logging.log4j.message.Message;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.InputStream;
@@ -11,16 +13,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.HexFormat;
+import java.util.stream.Stream;
 
 import static org.springframework.security.config.http.MatcherType.path;
 
+@Service
 public class OTAService {
 
-    private final String BIN_DIR = ".../firmware_binaries/";
+    @Value("${sentinel.firmware.bin-dir}")
+    private String BIN_DIR;
 
     public OTAWrapper getBinary(String ver) throws Exception {
         //get path based on ver
-        Path path = Paths.get(BIN_DIR + "sentinel_v" + ver + ".bin"); //path
+        Path path = Path.of(BIN_DIR + "sentinel_v" + ver + ".bin"); //path
         File bin_f = path.toFile(); //file obj from path. actual binary
 
         if(!bin_f.exists()) throw new FileNotFoundException("Firmware binary not found.");
@@ -46,7 +51,19 @@ public class OTAService {
 
     }
 
-    public UpdateCheckResponse checkForUpdate() {
+    public UpdateCheckResponse checkForUpdate(String ver) throws Exception {
+        Path binPath = Path.of(BIN_DIR);
+
+        try(Stream<Path> stream = Files.list(binPath)) {
+            Path latestFilePath = stream.filter(Files::isRegularFile)
+                    .filter(path -> path.toString().endsWith(".bin"))
+                    .max(java.util.Comparator.comparingLong(path -> path.toFile().lastModified()))
+                    .orElseThrow(() -> new FileNotFoundException("Firmware binaries not found."));
+
+            String fileName = latestFilePath.getFileName().toString();
+
+        }
+
 
     }
 
