@@ -6,23 +6,38 @@
 
 #include "abstractions/abstractions.h"
 
+#define RESP_BUF 512
+
+static char resp_buf[RESP_BUF];
+static int resp_len = 0;
 static const char* TAG = "OTA";
+static const char* TAGS = "OTA Server";
+
 esp_http_client_handle_t client_handle;
 
-void manage_endpoints(esp_http_client_handle_t client) {
+void manage_endpoints() {
     mutex_log('I', TAG, "Attempting to sync data over HTTPS...");
 
-    esp_err_t ret = esp_http_client_perform(&client); //acts as a courier. goes to our spring server, endpoints and all
+    esp_err_t initial_resp = esp_http_client_perform(client_handle); //acts as a courier. goes to our spring server, endpoints and all
 
-    if(ret == ESP_OK) mutex_log('I', "ESP Connected to server!");
+    if(initial_resp == ESP_OK) {
+        //if it connected to the server - wifi layer
+        mutex_log('I', TAGS, "ESP Connected to server!");
+        
+        int status_rc = esp_http_client_get_status_code(client_handle);
+        if(status_rc == 200) { 
+            mutex_log('I', TAGS, "Data Endpoint Fetch Successful! 200 OK.");
+        }
+        else mutex_log('E', TAGS, "Server REJECTED data! Status code: %d", status_rc);
+    } else mutex_log('I', TAGS, "Server handshake failed. %d", esp_err_to_name(initial_resp));
 
-    
 
 }
+
 static esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
     switch(evt->event_id) {
         case HTTP_EVENT_ON_DATA:
-            
+            manage_endpoints(); 
         break;
 
         default:
@@ -31,6 +46,8 @@ static esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
 
     return ESP_OK;
 }
+
+
 void init_http_client(void) {
 
     esp_http_client_config_t http_conf = {
