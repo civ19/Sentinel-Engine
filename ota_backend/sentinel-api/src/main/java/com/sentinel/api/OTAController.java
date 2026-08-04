@@ -24,7 +24,7 @@ public class OTAController {
     }
 
     @GetMapping("/download/{version}")
-    public ResponseEntity<Resource> downloadVFirmware(@RequestParam String ver) throws Exception {
+    public ResponseEntity<Resource> downloadFirmware(@RequestParam String ver) throws Exception {
         OTAWrapper otaData = service.getBinary(ver);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header("X-Sentinel-Hash", otaData.sha_hash()).body(otaData.resource());
