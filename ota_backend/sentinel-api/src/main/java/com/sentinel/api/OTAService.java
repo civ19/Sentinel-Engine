@@ -61,7 +61,12 @@ public class OTAService {
                     .orElseThrow(() -> new FileNotFoundException("Firmware binaries not found."));
 
             String fileName = latestFilePath.getFileName().toString();
+            String latestVer = fileName.replace("sentinel_v", "").replace(".bin", ".");
+            boolean updateAvail = !ver.equals(latestVer);
+            long fileSize = Files.size(latestFilePath);
+            String sha_hash = calc_sha256(latestFilePath);
 
+            return new UpdateCheckResponse(updateAvail, latestVer, fileSize, sha_hash);
         }
 
 
