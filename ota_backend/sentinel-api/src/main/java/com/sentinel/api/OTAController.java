@@ -1,7 +1,9 @@
 package com.sentinel.api;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,14 @@ public class OTAController {
         UpdateCheckResponse resp = service.checkForUpdate(ver);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
+
+    @GetMapping("/download/{version}")
+    public ResponseEntity<Resource> downloadVFirmware(@RequestParam String ver) throws Exception {
+        OTAWrapper otaData = service.getBinary(ver);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header("X-Sentinel-Hash", otaData.sha_hash()).body(otaData.resource());
+    }
+
 
 
 }
