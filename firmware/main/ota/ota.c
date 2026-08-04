@@ -8,10 +8,13 @@
 
 static const char* TAG = "OTA";
 
+void manage_endpoints(void) {
+    
+}
 static esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
     switch(evt->event_id) {
         case HTTP_EVENT_ON_DATA:
-        //
+            
         break;
 
         default:
@@ -25,6 +28,7 @@ void init_http_client(void) {
     esp_http_client_config_t http_conf = {
         .url = "https://172.17.35.33", //add nimBLE prov on this later
         .cert_pem = (const char *)server_cert_pem_start,
+        .event_handler = _http_event_handler,
         
     };
 
