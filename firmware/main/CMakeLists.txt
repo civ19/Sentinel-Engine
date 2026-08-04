@@ -9,7 +9,7 @@ idf_component_register(
          "pwm/pwm.c"
 
     INCLUDE_DIRS "."
-    
+
     REQUIRES 
         esp_pm
         esp_timer
@@ -23,6 +23,7 @@ idf_component_register(
         esp_wifi
         esp_netif
         esp_event
+        nvs_flash
 
 
     EMBED_TXTFILES
