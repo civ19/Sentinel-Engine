@@ -15,5 +15,6 @@ idf_component_register(
         cjson
         esp_http_client
         esp_https_ota
-        
+    EMBED_TXTFILES
+        "sentinel_cert.pem"
 )
