@@ -3,12 +3,13 @@
 #include "esp_http_client.h"
 #include "esp_https_ota.h"
 #include "cJSON.h"
+#include <string.h>
 
 #include "abstractions/abstractions.h"
 
-#define RESP_BUF 512
+#define MAX_RESP_BUF 512
 
-static char resp_buf[RESP_BUF];
+static char resp_buf[MAX_RESP_BUF];
 static int resp_len = 0;
 static const char* TAG = "OTA";
 static const char* TAGS = "OTA Server";
@@ -16,13 +17,13 @@ static const char* TAGS = "OTA Server";
 esp_http_client_handle_t client_handle;
 
 void manage_endpoints() {
-    mutex_log('I', TAG, "Attempting to sync data over HTTPS...");
+    mutex_log('I', TAG, "Attempting to sync firmware handshake data over HTTPS...");
 
     esp_err_t initial_resp = esp_http_client_perform(client_handle); //acts as a courier. goes to our spring server, endpoints and all
 
     if(initial_resp == ESP_OK) {
         //if it connected to the server - wifi layer
-        mutex_log('I', TAGS, "ESP Connected to server!");
+        mutex_log('I', TAGS, "TLS handshake with Server Successful!");
         
         int status_rc = esp_http_client_get_status_code(client_handle);
         if(status_rc == 200) { 
@@ -35,9 +36,20 @@ void manage_endpoints() {
 }
 
 static esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
-    switch(evt->event_id) {
+    switch(evt->event_id) { 
         case HTTP_EVENT_ON_DATA:
-            manage_endpoints(); 
+            if((resp_len + evt->data_len) < MAX_RESP_BUF) { //overflow check
+                memcpy((resp_buf + resp_len), evt->data, evt->data_len);
+                resp_len += evt->data_len;
+
+                resp_buf[resp_len] = "\0"; //null terminating end of the buf for safety
+            }
+
+            else mutex_log('E', TAGS, "Incoming JSON payload is too large for RAM Buffer.");
+        break;
+
+        case HTTP_EVENT_DISCONNECTED:
+            resp_len = 0; //preventing it from writing to ghost data if connection drops 
         break;
 
         default:
