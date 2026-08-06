@@ -39,10 +39,21 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
     switch(evt->event_id) {
         case HTTP_EVENT_ON_HEADER:
             if(strcasecmp(evt->header_key, "X-Sentinel-Hash") == 0) {
-                snprintf()
+                snprintf(global_hash_header, sizeof(global_hash_header), "%s",evt->header_value);
             }
+        break;
+
+        case HTTP_EVENT_ON_FINISH:
+            sec_status_code = esp_http_client_get_status_code(evt->client);
+        break;
+
+        default:
+        break;
     }
+
+    return ESP_OK;
 }
+
 void init_ota(void) {
 
     const esp_app_desc_t* app_desc = esp_app_get_description(); //app desc
