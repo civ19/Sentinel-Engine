@@ -9,6 +9,9 @@
 extern const uint8_t server_cert_pem_start[] asm("_binary_sentinel_cert_pem_start");
 extern const uint8_t server_cert_pem_end[] asm("_binary_sentinel_cert_pem_end");
 
+extern const char* TAG;
+extern const char* TAGS;
+
 
 void updated_check(esp_https_ota_handle_t handle, int status);
 

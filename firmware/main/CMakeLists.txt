@@ -5,7 +5,7 @@ idf_component_register(
          "abstractions/abstractions.c"
          "ota/ota.c"
          "wifi/wifi.c"
-         "wifi/w_tasks.c"
+         "tasks/ota_task.c"
          "pwm/pwm.c"
 
     INCLUDE_DIRS "."

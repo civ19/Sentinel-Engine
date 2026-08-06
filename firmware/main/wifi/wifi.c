@@ -11,6 +11,8 @@
 
 static const char *TAG = "EVENT_LOOP";
 
+
+
 EventGroupHandle_t wifi_event_group = NULL;
 
 static uint8_t retry_ctr = 0;

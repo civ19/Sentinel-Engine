@@ -14,8 +14,8 @@
 #define SERVER_IP "172.17.35.33" //will provision this later via nimble
 #define OTA_URL_SIZE 256
 
-static const char* TAG = "OTA";
-static const char* TAGS = "OTA Server";
+TAG = "OTA";
+TAGS = "OTA Server";
 
 static int status_code = 0;
 static char global_hash_header[65] = {0}; //sha256 hash buf
@@ -35,7 +35,7 @@ esp_err_t validate_img_header(esp_app_desc_t *new_app_info) {
         return ESP_ERR_INVALID_ARG;
     }
 
-    esp_app_desc_t *app_desc = esp_app_get_description();
+    const esp_app_desc_t *app_desc = esp_app_get_description();
     mutex_log('I', TAG, "Current app version: %s", app_desc->version);
     mutex_log('I', TAG, "Updated(new) app version: %s", new_app_info->version);
 
@@ -94,41 +94,6 @@ esp_err_t init_ota(esp_https_ota_handle_t *out_handle) { //double ptr
 
 }
 
-void perform_ota_task(void *pv) {
-    mutex_log('I', TAG, "Starting OTA Update Task...");
-    
-    status_code = 0;
-    memset(global_hash_header, 0, sizeof(global_hash_header));
-
-    esp_https_ota_handle_t ota_handle = NULL;
-    
-    init_ota(&ota_handle);
-
-    updated_check(ota_handle, status_code);
-
-    if(strlen(global_hash_header) > 0) mutex_log('I', TAGS, "Server provided SHA256 checksum: %s", global_hash_header);
-
-    for(;;) { //streaming data chunks for downloading and flashing
-        esp_err_t ret = esp_https_ota_perform(ota_handle);
-        if(ret != ESP_ERR_HTTPS_OTA_IN_PROGRESS) break;
-    }
-
-    if(esp_https_ota_is_complete_data_received(ota_handle)) {
-        esp_err_t ret = esp_https_ota_finish(ota_handle);
-        if(ret == ESP_OK) {
-            mutex_log('I', TAG, "Firmware Update Complete! Rebotting...");
-            esp_restart();
-        }
-        else mutex_log('E', TAG, "OTA Finish Failed. Return code: 0x%x", ret);
-    } else {
-        mutex_log('E', TAG, "OTA Data Stream Failed or connection timed out.");
-        esp_https_ota_abort(ota_handle);
-    }
-
-    vTaskDelete(NULL);
-
-
-}
 
 
 

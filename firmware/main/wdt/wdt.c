@@ -3,6 +3,7 @@
 #include "freertos/task.h"
 
 TaskHandle_t test_handle = NULL;
+TaskHandle_t ota_h = NULL;
 
 void wdt_init(void) {
     esp_task_wdt_config_t wdt_conf = {
@@ -13,6 +14,7 @@ void wdt_init(void) {
 
     ESP_ERROR_CHECK(esp_task_wdt_reconfigure(&wdt_conf));
     if(test_handle != NULL) ESP_ERROR_CHECK(esp_task_wdt_add(test_handle));
+    if(ota_handle != NULL) 
 
 }
 
