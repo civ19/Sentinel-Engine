@@ -23,14 +23,18 @@ public class OTAService {
     @Value("${sentinel.firmware.bin-dir}")
     private String BIN_DIR;
 
-    public OTAWrapper getBinary(String ver) throws Exception {
+    public OTAWrapper getBinaryIfUpdated(String curr_ver) throws Exception {
+        //we have to check for updates and scan for newest bin file first
+        Path l_path = getLatestFirmwarePath();
+
         //get path based on ver
-        Path path = Path.of(BIN_DIR + "sentinel_v" + ver + ".bin"); //path
-        File bin_f = path.toFile(); //file obj from path. actual binary
+        String fileName = l_path.getFileName().toString(); //name of the file at path
+        String l_ver = fileName.replace("sentinel_v", "").replace(".bin", "");
 
-        if(!bin_f.exists()) throw new FileNotFoundException("Firmware binary not found.");
+        if(curr_ver.equals(l_ver)) return null; //status 304 if no updates
 
-        String hash = calc_sha256(path);
+        File bin_f = l_path.toFile(); //file obj
+        String hash = calc_sha256(l_path);
 
         Resource resource = new FileSystemResource(bin_f);
         return new OTAWrapper(resource, hash);
@@ -51,7 +55,7 @@ public class OTAService {
 
     }
 
-    public UpdateCheckResponse checkForUpdate(String ver) throws Exception {
+    private Path getLatestFirmwarePath() throws Exception {
         Path binPath = Path.of(BIN_DIR);
 
         try(Stream<Path> stream = Files.list(binPath)) {
@@ -59,17 +63,7 @@ public class OTAService {
                     .filter(path -> path.toString().endsWith(".bin"))
                     .max(java.util.Comparator.comparingLong(path -> path.toFile().lastModified()))
                     .orElseThrow(() -> new FileNotFoundException("Firmware binaries not found."));
-
-            String fileName = latestFilePath.getFileName().toString();
-            String latestVer = fileName.replace("sentinel_v", "").replace(".bin", ".");
-            boolean updateAvail = !ver.equals(latestVer);
-            long fileSize = Files.size(latestFilePath);
-            String sha_hash = calc_sha256(latestFilePath);
-
-            return new UpdateCheckResponse(updateAvail, latestVer, fileSize, sha_hash);
         }
-
-
     }
 
 
