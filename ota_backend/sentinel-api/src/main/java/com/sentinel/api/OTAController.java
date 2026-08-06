@@ -15,15 +15,11 @@ public class OTAController {
     private final OTAService service;
 
     @GetMapping("/check")
-    public ResponseEntity<OTAWrapper> checkUpdate(@RequestParam String ver) throws Exception {
+    public ResponseEntity<Resource> downloadFirmware(@RequestParam("ver") String curr_ver) throws Exception {
+        OTAWrapper otaData = service.getBinaryIfUpdated(curr_ver);
 
-        UpdateCheckResponse resp = service.checkForUpdate(ver);
-        return new ResponseEntity<>(resp, HttpStatus.OK);
-    }
+        if(otaData == null) return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build(); //304
 
-    @GetMapping("/download/{version}")
-    public ResponseEntity<Resource> downloadFirmware(@PathVariable String ver) throws Exception {
-        OTAWrapper otaData = service.getBinary(ver);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header("X-Sentinel-Hash", otaData.sha_hash()).body(otaData.resource());
     }

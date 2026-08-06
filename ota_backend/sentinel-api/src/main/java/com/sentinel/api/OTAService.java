@@ -59,11 +59,13 @@ public class OTAService {
         Path binPath = Path.of(BIN_DIR);
 
         try(Stream<Path> stream = Files.list(binPath)) {
-            Path latestFilePath = stream.filter(Files::isRegularFile)
+            return stream.filter(Files::isRegularFile)
                     .filter(path -> path.toString().endsWith(".bin"))
                     .max(java.util.Comparator.comparingLong(path -> path.toFile().lastModified()))
                     .orElseThrow(() -> new FileNotFoundException("Firmware binaries not found."));
+
         }
+
     }
 
 
