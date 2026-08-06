@@ -18,9 +18,19 @@ static const char* TAG = "OTA";
 static const char* TAGS = "OTA Server";
 
 static int sec_status_code = 0;
-static char global_hash_header[65] = {0};
+static char global_hash_header[65] = {0}; //sha256 hash buf
 
 
+bool isUpToDate(int status, esp_https_ota_handle_t handle) {
+    if(status == 304) {
+        mutex_log('I', TAGS, "Backend returned 304: Firmware is already up to date.");
+        esp_https_ota_abort(handle);
+        vTaskDelete(NULL);
+
+        return true;
+    }
+    return false;
+}
 
 esp_err_t validate_img_header(esp_app_desc_t *new_app_info) {
     if(new_app_info == NULL) {
@@ -34,6 +44,7 @@ esp_err_t validate_img_header(esp_app_desc_t *new_app_info) {
 
     return ESP_OK; //for anti rollback
 }
+
 
 esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
     switch(evt->event_id) {
