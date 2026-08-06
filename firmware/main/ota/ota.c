@@ -2,6 +2,9 @@
 #include "esp_log.h"
 #include "esp_http_client.h"
 #include "esp_https_ota.h"
+#include "esp_ota_ops.h"
+#include "esp_app_format.h"
+
 #include <string.h>
 #include <stdio.h>
 
@@ -9,12 +12,14 @@
 
 #define CURR_VER "1.0.0"
 #define SERVER_IP "172.17.35.33" //will provision this later via nimble
-
+#define OTA_URL_SIZE 256
 
 static const char* TAG = "OTA";
 static const char* TAGS = "OTA Server";
 
-esp_http_client_handle_t client_handle;
+static int sec_status_code = 0;
+static char global_hash_header[65] = {0};
+
 
 
 esp_err_t validate_img_header(esp_app_desc_t *new_app_info) {
@@ -30,20 +35,49 @@ esp_err_t validate_img_header(esp_app_desc_t *new_app_info) {
     return ESP_OK; //for anti rollback
 }
 
-void init_http_client(void) {
+esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
+    switch(evt->event_id) {
+        case HTTP_EVENT_ON_HEADER:
+            if(strcasecmp(evt->header_key, "X-Sentinel-Hash") == 0) {
+                snprintf()
+            }
+    }
+}
+void init_ota(void) {
 
+    const esp_app_desc_t* app_desc = esp_app_get_description(); //app desc
+    char url[OTA_URL_SIZE];
+    snprintf(url, sizeof(url), "https://%s:8080/api/ota/check?ver=%s", SERVER_IP, app_desc->version);
+
+
+    //http init
     esp_http_client_config_t http_conf = {
-        .url = "https://172.17.35.33", //add nimBLE prov on this later
+        .url = url, //adding  nimBLE prov on this later
         .cert_pem = (const char *)server_cert_pem_start,
-        
+        .skip_cert_common_name_check = true, //skipping cn
+        .keep_alive_enable = true,
+        .timeout_ms = 10000,
+        .event_handler = _http_event_handler,
     };
 
-    client_handle = esp_http_client_init(&http_conf);
+    esp_https_ota_config_t ota_conf = { //ota conf
+        .http_config = &http_conf,
+    };
 
-    if(client_handle == NULL) {
-        mutex_log('E', TAG, "Failed to allocate esp_http_client memory handle.");
-        return;
+    esp_https_ota_handle_t update_handle = NULL;
+    esp_err_t ret = esp_https_ota_begin(&ota_conf, &ota_conf);
+    if(ret != ESP_OK) {
+        mutex_log('E', TAG, "ESP HTTPS OTA Begin failed (Check network connection or cert data)");
+        vTaskDelete(NULL);
     }
+
+}
+
+void perform_ota_task(void *pv) {
+    mutex_log('I', TAG, "Starting OTA Update Task...");
+    
+
+
 
 }
 
