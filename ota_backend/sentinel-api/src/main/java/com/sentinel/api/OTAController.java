@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/ota")
+@RequestMapping("/api/ota")
 public class OTAController {
 
     private final OTAService service;
