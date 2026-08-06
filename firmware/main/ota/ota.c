@@ -36,7 +36,7 @@ esp_err_t validate_img_header(esp_app_desc_t *new_app_info) {
     }
 
     esp_app_desc_t *app_desc = esp_app_get_description();
-    mutex_log('I', TAG, "Current app version: &s", app_desc->version);
+    mutex_log('I', TAG, "Current app version: %s", app_desc->version);
     mutex_log('I', TAG, "Updated(new) app version: %s", new_app_info->version);
 
 
@@ -63,7 +63,7 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
     return ESP_OK;
 }
 
-esp_https_ota_handle_t init_ota(void) {
+esp_err_t init_ota(esp_https_ota_handle_t *out_handle) { //double ptr 
 
     const esp_app_desc_t* app_desc = esp_app_get_description(); //app desc
     char url[OTA_URL_SIZE];
@@ -84,14 +84,13 @@ esp_https_ota_handle_t init_ota(void) {
         .http_config = &http_conf,
     };
 
-    esp_https_ota_handle_t update_handle = NULL;
-    esp_err_t ret = esp_https_ota_begin(&ota_conf, &update_handle);
+    esp_err_t ret = esp_https_ota_begin(&ota_conf, out_handle);
     if(ret != ESP_OK) {
         mutex_log('E', TAG, "ESP HTTPS OTA Begin failed (Check network connection or cert data)");
         vTaskDelete(NULL);
     }
 
-    return update_handle;
+    return ret;
 
 }
 
@@ -101,7 +100,9 @@ void perform_ota_task(void *pv) {
     status_code = 0;
     memset(global_hash_header, 0, sizeof(global_hash_header));
 
-    esp_ota_handle_t ota_handle = init_ota();
+    esp_https_ota_handle_t ota_handle = NULL;
+    
+    init_ota(&ota_handle);
 
     updated_check(ota_handle, status_code);
 
@@ -112,7 +113,7 @@ void perform_ota_task(void *pv) {
         if(ret != ESP_ERR_HTTPS_OTA_IN_PROGRESS) break;
     }
 
-    if(esp_https_ota_is_complete_data_received) {
+    if(esp_https_ota_is_complete_data_received(ota_handle)) {
         esp_err_t ret = esp_https_ota_finish(ota_handle);
         if(ret == ESP_OK) {
             mutex_log('I', TAG, "Firmware Update Complete! Rebotting...");
