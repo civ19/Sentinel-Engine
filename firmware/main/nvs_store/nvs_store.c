@@ -9,7 +9,16 @@
 
 
 static const char* TAG = "NVS";
+static nvs_handle_t nvs_handle;
 
+esp_err_t nvs_reset(nvs_handle_t nvs_h) {
+    esp_err_t ret = nvs_set_i32(nvs_h, "boot_count", 0);
+    if(ret != ESP_OK) mutex_log('E',TAG, "NVS write failed for Boot Count. Error: %s", esp_err_to_name(ret));
+
+    ret = nvs_set_i32(nvs_h, "crash_count", 0);
+    if(ret != ESP_OK) mutex_log('E',TAG, "NVS write failed for Crash Count. Error: %s", esp_err_to_name(ret));
+
+}
 
 void nvs_init(void) { //initializing nvs 
     esp_err_t ret = nvs_flash_init();
@@ -18,7 +27,18 @@ void nvs_init(void) { //initializing nvs
         ret = nvs_flash_init();
     }
 
-    ESP_ERROR_CHECK(ret);
+    if (ret != ESP_OK) if (ret != ESP_OK) {
+        mutex_log('E', TAG, "NVS initialization failed.");
+        return ret;
+    }
+
+    ret = nvs_open("Debug", NVS_READWRITE, &nvs_handle);
+    if (ret != ESP_OK) {
+        mutex_log('E', TAG, "NVS namespace open failed.");
+    }
+
+    return ret;
+
 }
 
 nvs_handle_t open_namespace(const char* name) { //making the debug namespace

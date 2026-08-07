@@ -8,6 +8,7 @@ idf_component_register(
          "tasks/ota_task.c"
          "tasks/w_task.c"
          "nvs_store/nvs_store.c"
+         "sentinel_debug/cmd.c"
 
     INCLUDE_DIRS "."
 
@@ -26,6 +27,7 @@ idf_component_register(
         esp_event
         nvs_flash
         console
+        driver
 
 
     EMBED_TXTFILES

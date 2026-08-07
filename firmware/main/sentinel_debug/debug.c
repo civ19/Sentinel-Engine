@@ -3,9 +3,9 @@
 #include "esp_core_dump.h"
 #include "esp_log.h"
 #include "esp_cpu.h"
-#include "esp_console.h"   // The core engine that handles commands and input loops
-#include "linenoise/linenoise.h" // Handles text editing tricks (like backspace and line wrapping)
-#include "driver/uart.h"     // The driver that actually opens the hardware serial pins
+#include "esp_console.h"  
+#include "linenoise/linenoise.h"
+#include "driver/uart.h"    
 
 #include "abstractions/abstractions.h"
 #include "nvs_store/nvs_store.h"
@@ -47,7 +47,8 @@ void check_panic_data() {
     free(sum);
 }
 
+
 void activate_safe_mode() {
-    if
+  
 }
 
