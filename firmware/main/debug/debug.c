@@ -4,7 +4,7 @@
 #include "esp_cpu.h"
 
 #include "abstractions/abstractions.h"
-#include "reboot.h"
+#include "debug.h"
 
 static const char* TAG = "CORE_DUMP";
 static const char *TAGB = "BOOT";

@@ -12,16 +12,13 @@
 #include <stdio.h>
 
 #include "abstractions/abstractions.h"
-
-TAG = "OTA";
-TAGS = "OTA Server";
-
+#include "ota/ota.h"
 
 void perform_ota_task(void *pv) {
     mutex_log('I', TAG, "Starting OTA Update Task...");
     
     int status_code = get_status_code();
-    const char *hash_header = get_hash_header();
+    char *hash_header = get_hash_header();
 
     esp_https_ota_handle_t ota_handle = NULL;
     

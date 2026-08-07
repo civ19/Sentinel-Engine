@@ -8,7 +8,7 @@
 #include "freertos/semphr.h"
 
 #include  "abstractions/abstractions.h"
-#include "debug/reboot.h"
+#include "debug/debug.h"
 #include "wdt/wdt.h"
 #include "ota/ota.h"
 #include "tasks/ota_task.h"
@@ -29,7 +29,7 @@ void app_main(void) {
     
     //xTaskCreatePinnedToCore(wdt_test_task, "wdtTest", 4096, NULL, 2, &test_handle, 0);
     xTaskCreatePinnedToCore(perform_ota_task, "OtaTask", 4096, NULL, 2, NULL, 1);
-    
+
 
     
 }

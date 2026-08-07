@@ -1,12 +1,12 @@
 idf_component_register(
     SRCS "main.c"
-         "debug/reboot.c"
+         "debug/debug.c"
          "wdt/wdt.c"
          "abstractions/abstractions.c"
          "ota/ota.c"
          "wifi/wifi.c"
          "tasks/ota_task.c"
-         "pwm/pwm.c"
+         "nvs_store/nvs_store.c"
 
     INCLUDE_DIRS "."
 
