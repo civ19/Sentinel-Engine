@@ -9,18 +9,25 @@
 
 
 static const char* TAG = "NVS";
-static nvs_handle_t nvs_handle;
+static nvs_handle_t nvs_h;
 
-esp_err_t nvs_reset(nvs_handle_t nvs_h) {
+
+esp_err_t nvs_reset(void) {
     esp_err_t ret = nvs_set_i32(nvs_h, "boot_count", 0);
     if(ret != ESP_OK) mutex_log('E',TAG, "NVS write failed for Boot Count. Error: %s", esp_err_to_name(ret));
 
     ret = nvs_set_i32(nvs_h, "crash_count", 0);
     if(ret != ESP_OK) mutex_log('E',TAG, "NVS write failed for Crash Count. Error: %s", esp_err_to_name(ret));
 
+    ret = nvs_commit(nvs_h);
+    if (ret != ESP_OK) {
+        mutex_log('E', TAG, "NVS commit failed: %s", esp_err_to_name(ret));
+    }
+
+    return ret;
 }
 
-void nvs_init(void) { //initializing nvs 
+esp_err_t nvs_init(void) { //initializing nvs 
     esp_err_t ret = nvs_flash_init();
     if(ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
         ESP_ERROR_CHECK(nvs_flash_erase());
@@ -32,7 +39,7 @@ void nvs_init(void) { //initializing nvs
         return ret;
     }
 
-    ret = nvs_open("Debug", NVS_READWRITE, &nvs_handle);
+    ret = nvs_open("Debug", NVS_READWRITE, &nvs_h);
     if (ret != ESP_OK) {
         mutex_log('E', TAG, "NVS namespace open failed.");
     }
@@ -41,14 +48,8 @@ void nvs_init(void) { //initializing nvs
 
 }
 
-nvs_handle_t open_namespace(const char* name) { //making the debug namespace
-    nvs_handle_t nvs_h;
-    ESP_ERROR_CHECK(nvs_open("Debug", NVS_READWRITE, &nvs_h));
 
-    return nvs_h;
-}
-
-int32_t nvs_increment_cb(nvs_handle_t nvs_h, const char *key, void (*on_error_cb)(void)) {
+int32_t nvs_increment_cb(const char *key, void (*on_error_cb)(void)) {
     int32_t cnt = 0;
 
     //reading curr val:
@@ -63,8 +64,7 @@ int32_t nvs_increment_cb(nvs_handle_t nvs_h, const char *key, void (*on_error_cb
         return -1;
     }
     else {
-        cnt++; //if things go well and theres no read errors, we can just increment
-        
+        cnt++; //if things go well and theres no read errors, we can just increment 
     }
 
     ret = nvs_set_i32(nvs_h, key, cnt);
@@ -74,13 +74,5 @@ int32_t nvs_increment_cb(nvs_handle_t nvs_h, const char *key, void (*on_error_cb
 
     return cnt;
 }
-
-void nvs_key_track(nvs_handle_t nvs_h) {
-    //int32_t boot_cnt = nvs_increment_cb(nvs_h, "boot_count", activate_safe_mode);
-    //int32_t crash_cnt = nvs_increment_cb(nvs_h, "crash_count", activate_safe_mode);
-
-}
-
-
 
 
