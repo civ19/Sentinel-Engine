@@ -8,6 +8,7 @@
 #include "abstractions/abstractions.h"
 #include "nvs_store/nvs_store.h"
 #include "tasks/ota_task.h"
+#include "debug.h"
 
 static const char* TAG = "CMD";
 static bool isOtaRunning =  false;
@@ -113,5 +114,18 @@ static int do_force_ota(int argc, char** argv) {
     return 0;
 
 
+
+}
+
+static int do_core_dump(int argc, char **argv) {
+    if(argc > 1) {
+        printf("Error: Invalid syntax. Simply type 'crash_report' with no extra arguments.\n");
+        return 1;
+    }
+
+    printf("User requested core dump. Executing Core Dump Summary...");
+    check_panic_data();
+    
+    return 0;
 
 }
