@@ -14,7 +14,6 @@ void wdt_init(void) {
 
     ESP_ERROR_CHECK(esp_task_wdt_reconfigure(&wdt_conf));
     if(test_handle != NULL) ESP_ERROR_CHECK(esp_task_wdt_add(test_handle));
-    if(ota_handle != NULL) 
 
 }
 

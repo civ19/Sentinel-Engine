@@ -20,8 +20,8 @@ TAGS = "OTA Server";
 void perform_ota_task(void *pv) {
     mutex_log('I', TAG, "Starting OTA Update Task...");
     
-    status_code = 0;
-    memset(global_hash_header, 0, sizeof(global_hash_header));
+    int status_code = get_status_code();
+    const char *hash_header = get_hash_header();
 
     esp_https_ota_handle_t ota_handle = NULL;
     
@@ -31,7 +31,7 @@ void perform_ota_task(void *pv) {
 
     ESP_ERROR_CHECK(esp_task_wdt_add(NULL));
 
-    if(strlen(global_hash_header) > 0) mutex_log('I', TAGS, "Server provided SHA256 checksum: %s", global_hash_header);
+    if(strlen(hash_header) > 0) mutex_log('I', TAGS, "Server provided SHA256 checksum: %s", hash_header);
 
     mutex_log('I', TAG, "Downloading new firmware binary");
 

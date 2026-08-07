@@ -10,6 +10,8 @@
 #include  "abstractions/abstractions.h"
 #include "debug/reboot.h"
 #include "wdt/wdt.h"
+#include "ota/ota.h"
+#include "tasks/ota_task.h"
 
 void trigger_null_ptr_crash() {
 
@@ -25,7 +27,9 @@ void app_main(void) {
     ESP_LOGI("SYS", "About to show core dump...");
     check_panic_data();
     
-    xTaskCreatePinnedToCore(wdt_test_task, "wdtTest", 4096, NULL, 2, &test_handle, 0);
+    //xTaskCreatePinnedToCore(wdt_test_task, "wdtTest", 4096, NULL, 2, &test_handle, 0);
+    xTaskCreatePinnedToCore(perform_ota_task, "OtaTask", 4096, NULL, 2, NULL, 1);
+    
 
     
 }

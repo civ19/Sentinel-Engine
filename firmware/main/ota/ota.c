@@ -20,6 +20,8 @@ TAGS = "OTA Server";
 static int status_code = 0;
 static char global_hash_header[65] = {0}; //sha256 hash buf
 
+int get_status_code() {return status_code;} //getters. i'll be using these in ota_task.c
+char get_hash_header() {return global_hash_header;}
 
 void updated_check(esp_https_ota_handle_t handle, int status) {
     if(status == 304) {
