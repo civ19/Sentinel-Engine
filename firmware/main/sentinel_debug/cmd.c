@@ -31,11 +31,16 @@ void esp_cmd_conf(void) {
         .func = &do_clear_nvs,
     };
 
+    esp_console_cmd_register(&clear_cmd);
+
+
     const esp_console_cmd_t ota_cmd = {
         .command = "ota_force",
         .help =  "Bypasses safe moden lock to trigger an immediate OTA check if the current firmware is too bugged. Do ota_force.",
-        .func = &ota_cmd,
+        .func = &do_force_ota,
     };
+
+    esp_console_cmd_register(&ota_cmd);
 
     const esp_console_cmd_t reboot_cmd = {
         .command = "reboot",
@@ -43,17 +48,23 @@ void esp_cmd_conf(void) {
         .func = &do_reboot,
     };
 
+    esp_console_cmd_register(&reboot_cmd);
+
     const esp_console_cmd_t crash_cmd = {
         .command = "crash_report",
         .help =  "Shows the Core Dump Summary of the previous session. Type crash_report.",
         .func = &do_core_dump,
     };
 
+    esp_console_cmd_register(&crash_cmd);
+
     const esp_console_cmd_t clear_dump_cmd = {
         .command = "crash_clear",
         .help =  "Erase the Core Dump image. Type crash_clear.",
         .func = &do_clear_dump,
     };
+
+    esp_console_cmd_register(&clear_dump_cmd);
 
 }
 

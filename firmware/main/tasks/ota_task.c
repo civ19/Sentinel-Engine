@@ -15,6 +15,9 @@
 #include "ota/ota.h"
 #include "sentinel_debug/cmd.h"
 
+const char *TAG = "OTA";
+const char *TAGS = "OTA Server";
+
 void perform_ota_task(void *pv) {
     mutex_log('I', TAG, "Starting OTA Update Task...");
     

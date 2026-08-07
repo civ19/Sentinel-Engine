@@ -9,6 +9,7 @@ idf_component_register(
          "tasks/w_task.c"
          "nvs_store/nvs_store.c"
          "sentinel_debug/cmd.c"
+         "tasks/cmd_task.c"
 
     INCLUDE_DIRS "."
 

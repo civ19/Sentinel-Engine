@@ -22,13 +22,7 @@ void trigger_null_ptr_crash() {
 }
 
 void app_main(void) {
-    printMutex = xSemaphoreCreateMutex();
-
-    ESP_LOGI("SYS", "About to show core dump...");
-    check_panic_data();
     
-    //xTaskCreatePinnedToCore(wdt_test_task, "wdtTest", 4096, NULL, 2, &test_handle, 0);
-    xTaskCreatePinnedToCore(perform_ota_task, "OtaTask", 4096, NULL, 2, NULL, 1);
 
 
     
