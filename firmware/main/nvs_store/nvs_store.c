@@ -52,7 +52,9 @@ int32_t nvs_increment_cb(nvs_handle_t nvs_h, const char *key, void (*on_error_cb
 }
 
 int32_t nvs_key_track(nvs_handle_t nvs_h) {
-    //int32_t boot_cnt = nvs_increment_cb()
+    int32_t boot_cnt = nvs_increment_cb(nvs_h, "boot_count", activate_safe_mode);
+    int32_t crash_cnt = nvs_increment_cb(nvs_h, "crash_count", activate_safe_mode);
+
 }
 
 
