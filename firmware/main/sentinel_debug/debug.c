@@ -33,14 +33,13 @@ void check_panic_data() {
                 ESP_LOGD(TAG, "SP: %p", sp);
                 ESP_LOGD(TAG, "Return Addr LR (A0): 0x08%" PRIx32, sum->ex_info.exc_a);
                 
-                ESP_ERROR_CHECK(esp_core_dump_image_erase());
-                ESP_LOGI(TAG, "Core dump flash partition erased successfully.");
             } 
-            else ESP_LOGI(TAG, "Clean Sys Boot. No crash data detected.");
 
             xSemaphoreGive(printMutex);
             
         } 
+
+        else ESP_LOGI(TAG, "Clean Sys Boot. No crash data detected.");
         
     }
 

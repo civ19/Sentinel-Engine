@@ -12,6 +12,8 @@ static const char* TAG = "CMD";
 static int do_force_ota(int argc, char** argv);
 static int do_reboot(int argc, char** argv);
 static int do_clear_nvs(int argc, char **argv);
+static int do_core_dump(int argc, char **argv);
+static int do_clear_dump(int argc, char **argv);
 
 void esp_cmd_conf(void) {
     
@@ -28,9 +30,21 @@ void esp_cmd_conf(void) {
     };
 
     const esp_console_cmd_t reboot_cmd = {
-        .command = "ota_force",
+        .command = "reboot",
         .help =  "Execute an immediate ESP32-S3 hardware reset.",
         .func = &do_reboot,
+    };
+
+    const esp_console_cmd_t crash_cmd = {
+        .command = "crash_report",
+        .help =  "Shows the Core Dump Summary of the previous session. Type crash_report.",
+        .func = &do_core_dump,
+    };
+
+    const esp_console_cmd_t clear_dump_cmd = {
+        .command = "crash_clear",
+        .help =  "Erase the Core Dump image. Type crash_clear.",
+        .func = &do_clear_dump,
     };
 
 }
@@ -54,5 +68,16 @@ static int do_clear_nvs(int argc, char **argv) {
     
 }
 
+static int do_reboot(int argc, char** argv) {
+    if(argc > 1) {
+        printf("Error: Invalid syntax. Simply type 'reboot' with no extra arguments.\n");
+        return 1;
+    }
 
+    mutex_log('I', TAG, "User issues manual reboot. Rebooting ESP32...");
+    esp_restart();
+    
+    return 0;
+
+}
 
