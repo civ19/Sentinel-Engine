@@ -4,6 +4,7 @@
 #include "linenoise/linenoise.h"
 #include "driver/uart.h"    
 #include "freertos/FreeRTOS.h"
+#include "esp_core_dump.h"
 
 #include "abstractions/abstractions.h"
 #include "nvs_store/nvs_store.h"
@@ -123,9 +124,40 @@ static int do_core_dump(int argc, char **argv) {
         return 1;
     }
 
-    printf("User requested core dump. Executing Core Dump Summary...");
-    check_panic_data();
-    
+    esp_core_dump_summary_t *sum = malloc(sizeof(esp_core_dump_summary_t));
+
+    if (sum == NULL) {
+        printf("Error: Microcontroller heap exhausted. Cannot allocate summary structure space.\n");
+        return 1;
+    }
+
+    printf("User requested core dump. Executing Core Dump Summary...\n");
+    check_panic_data(sum);
+    printf("\nDont forget to CLEAR!");
+
+    free(sum);
     return 0;
 
+}
+
+static int do_clear_dump(int argc, char** argv) {
+    if(argc > 1) {
+        printf("Error: Invalid syntax. Simply type 'crash_clear' with no extra arguments.\n");
+        return 1;
+    }
+
+    printf("User requested clearing the core dump. Clearing the image...");
+
+
+    esp_err_t err = esp_core_dump_image_erase();
+
+    if (err == ESP_OK) {
+        printf("Cleared successfully.\n");
+    } else {
+        printf("Error: Failed to erase the core dump flash partition (0x%x).\n", err);
+    }
+
+    printf("Cleared successfully.");
+
+    return 0;
 }

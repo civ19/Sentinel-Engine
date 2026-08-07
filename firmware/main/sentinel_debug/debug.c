@@ -15,9 +15,10 @@ static const char* TAG = "CORE_DUMP";
 static const char *TAGB = "BOOT";
 
 
-void check_panic_data() {
+void check_panic_data(esp_core_dump_summary_t *sum) {
     void* sp = esp_cpu_get_sp();
-    esp_core_dump_summary_t *sum = malloc(sizeof(esp_core_dump_summary_t));
+    
+    if(sum == NULL) return;
 
     if(sum != NULL) {
         //if theres a summary => core dump availabvle
@@ -43,7 +44,7 @@ void check_panic_data() {
         
     }
 
-    free(sum);
+    
 }
 
 
