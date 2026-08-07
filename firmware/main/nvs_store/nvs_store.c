@@ -5,10 +5,12 @@
 #include "esp_log.h"
 
 #include "abstractions/abstractions.h"
+#include "sentinel_debug/debug.h"
 
-const char* TAG = "NVS";
 
-void activate_safe_mode();
+static const char* TAG = "NVS";
+static bool crashed = false;
+
 
 void nvs_init(void) { //initializing nvs 
     esp_err_t ret = nvs_flash_init();
@@ -37,11 +39,15 @@ int32_t nvs_increment_cb(nvs_handle_t nvs_h, const char *key, void (*on_error_cb
         mutex_log('E',TAG, "NVS read failed for key: %s. Error: %s", key, esp_err_to_name(ret));
 
         if(on_error_cb != NULL) {
+            crashed == true;
             on_error_cb();
         }
         return -1;
     }
-    else cnt++; //if things go well and theres no read errors, we can just increment
+    else {
+        cnt++; //if things go well and theres no read errors, we can just increment
+        crashed == false; //resetting crashed so it doesnt ALWAYS g
+    }
 
     ret = nvs_set_i32(nvs_h, key, cnt);
     if(ret != ESP_OK) mutex_log('E',TAG, "NVS write failed for key: %s. Error: %s", key, esp_err_to_name(ret));
@@ -51,9 +57,9 @@ int32_t nvs_increment_cb(nvs_handle_t nvs_h, const char *key, void (*on_error_cb
     return cnt;
 }
 
-int32_t nvs_key_track(nvs_handle_t nvs_h) {
-    int32_t boot_cnt = nvs_increment_cb(nvs_h, "boot_count", activate_safe_mode);
-    int32_t crash_cnt = nvs_increment_cb(nvs_h, "crash_count", activate_safe_mode);
+void nvs_key_track(nvs_handle_t nvs_h) {
+    //int32_t boot_cnt = nvs_increment_cb(nvs_h, "boot_count", activate_safe_mode);
+    //int32_t crash_cnt = nvs_increment_cb(nvs_h, "crash_count", activate_safe_mode);
 
 }
 

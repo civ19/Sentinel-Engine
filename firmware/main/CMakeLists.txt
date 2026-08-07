@@ -1,11 +1,12 @@
 idf_component_register(
     SRCS "main.c"
-         "debug/debug.c"
+         "sentinel_debug/debug.c"
          "wdt/wdt.c"
          "abstractions/abstractions.c"
          "ota/ota.c"
          "wifi/wifi.c"
          "tasks/ota_task.c"
+         "tasks/w_task.c"
          "nvs_store/nvs_store.c"
 
     INCLUDE_DIRS "."
@@ -24,6 +25,7 @@ idf_component_register(
         esp_netif
         esp_event
         nvs_flash
+        console
 
 
     EMBED_TXTFILES

@@ -7,7 +7,7 @@
 #include "freertos/event_groups.h"
 
 #include "abstractions/abstractions.h"
-#include "wifi.h"
+#include "wifi/wifi.h"
 
 static const char *TAG = "EVENT_LOOP";
 

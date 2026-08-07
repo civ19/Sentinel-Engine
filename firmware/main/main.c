@@ -8,7 +8,7 @@
 #include "freertos/semphr.h"
 
 #include  "abstractions/abstractions.h"
-#include "debug/debug.h"
+#include "sentinel_debug/debug.h"
 #include "wdt/wdt.h"
 #include "ota/ota.h"
 #include "tasks/ota_task.h"
