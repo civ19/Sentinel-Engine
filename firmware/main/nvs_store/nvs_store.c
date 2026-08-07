@@ -9,7 +9,6 @@
 
 
 static const char* TAG = "NVS";
-static bool crashed = false;
 
 
 void nvs_init(void) { //initializing nvs 
@@ -39,14 +38,13 @@ int32_t nvs_increment_cb(nvs_handle_t nvs_h, const char *key, void (*on_error_cb
         mutex_log('E',TAG, "NVS read failed for key: %s. Error: %s", key, esp_err_to_name(ret));
 
         if(on_error_cb != NULL) {
-            crashed == true;
             on_error_cb();
         }
         return -1;
     }
     else {
         cnt++; //if things go well and theres no read errors, we can just increment
-        crashed == false; //resetting crashed so it doesnt ALWAYS g
+        
     }
 
     ret = nvs_set_i32(nvs_h, key, cnt);
