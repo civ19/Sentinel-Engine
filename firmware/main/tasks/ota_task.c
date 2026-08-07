@@ -13,6 +13,7 @@
 
 #include "abstractions/abstractions.h"
 #include "ota/ota.h"
+#include "sentinel_debug/cmd.h"
 
 void perform_ota_task(void *pv) {
     mutex_log('I', TAG, "Starting OTA Update Task...");
@@ -50,6 +51,7 @@ void perform_ota_task(void *pv) {
         esp_https_ota_abort(ota_handle);
     }
 
+    set_ota_bool(false);
     esp_task_wdt_delete(NULL);
     vTaskDelete(NULL);
 

@@ -3,17 +3,23 @@
 #include "esp_console.h"  
 #include "linenoise/linenoise.h"
 #include "driver/uart.h"    
+#include "freertos/FreeRTOS.h"
 
 #include "abstractions/abstractions.h"
 #include "nvs_store/nvs_store.h"
+#include "tasks/ota_task.h"
 
 static const char* TAG = "CMD";
+static bool isOtaRunning =  false;
 
 static int do_force_ota(int argc, char** argv);
 static int do_reboot(int argc, char** argv);
 static int do_clear_nvs(int argc, char **argv);
 static int do_core_dump(int argc, char **argv);
 static int do_clear_dump(int argc, char **argv);
+
+
+void set_ota_bool(bool val) {isOtaRunning = val;}
 
 void esp_cmd_conf(void) {
     
@@ -57,7 +63,7 @@ static int do_clear_nvs(int argc, char **argv) {
         return 1;
     }
 
-    mutex_log('I', TAG, "User issues manual clear override. Resetting nvs crash counter...");
+    mutex_log('I', TAG, "User issued manual clear override. Resetting nvs crash counter...");
     if (nvs_reset() == ESP_OK) {
         printf("NVS variables wiped and committed. Run 'reboot' to attempt normal startup.\n");
         return 0;
@@ -74,10 +80,38 @@ static int do_reboot(int argc, char** argv) {
         return 1;
     }
 
-    mutex_log('I', TAG, "User issues manual reboot. Rebooting ESP32...");
-    esp_restart();
+    mutex_log('I', TAG, "User issued manual reboot. Rebooting ESP32...");
+    esp_restart(); //if manual then print esp restarted successfuly : reminder
     
     return 0;
 
 }
 
+static int do_force_ota(int argc, char** argv) {
+    if(argc > 1) {
+        printf("Error: Invalid syntax. Simply type 'ota_force' with no extra arguments.\n");
+        return 1;
+    }
+
+    if(isOtaRunning == false) {
+        isOtaRunning = true;
+        BaseType_t ret = xTaskCreatePinnedToCore(perform_ota_task, "OtaTask", 8192, NULL, 2, NULL, 1);
+
+        if(ret != pdPASS) {
+            printf("Error: System failed to allocate necessary heap space for the thread.\n");
+            isOtaRunning = false;
+            return 1;
+        }
+    } 
+    else {
+        printf("Error: A firmware download task is already actively processing blocks.\n");
+        return 1;
+    } 
+
+    printf("User issued forced OTA Update. Running task...");
+
+    return 0;
+
+
+
+}
