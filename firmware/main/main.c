@@ -15,6 +15,7 @@
 #include "tasks/ota_task.h"
 #include "nvs_store/nvs_store.h"
 
+const char *TAG = "MAIN";
 void trigger_null_ptr_crash() {
 
     ESP_LOGI("SYS", "About to crash now...");
@@ -23,12 +24,21 @@ void trigger_null_ptr_crash() {
     *bad_ptr = 42;
 }
 
+void loop_validation_task(void *pv) {
+    mutex_log('I', TAG, "Verifying Boot Integrity...");
+    vTaskDelay(pdMS_TO_TICKS(2000)); //10s check. the esp gets 2s of good execution to prove its not on a boot loop
+    
+    mutex_log('I', TAG, "Device stabilized successfully. Clearing boot tracking metrics.");
+    nvs_reset(0);
+
+}
+
 void app_main(void) {
     
     //check if we have no boot loops first. secuity checks
     if((init_nvs() != ESP_OK)) esp_restart();
 
-    
+
 
     esp_err_t ret = esp_ota_mark_app_valid_cancel_rollback(); 
     

@@ -68,7 +68,7 @@ bool isBootLoop(void) {
 
 
 
-int32_t nvs_increment_cb(const char *key,) {
+int32_t nvs_increment_cb(const char *key) {
     int32_t cnt = 0;
 
     //reading curr val:
