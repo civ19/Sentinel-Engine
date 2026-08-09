@@ -1,15 +1,38 @@
-#include "esp_log.h"
 #include "freertos/FreeRTOS.h"
-#include "esp_event.h"
-#include "nvs_flash.h"
-#include "esp_wifi.h" 
-#include "esp_netif.h" 
-#include "freertos/event_groups.h"
-
+#include "freertos/task.h"
 #include "abstractions/abstractions.h"
+#include "esp_wifi.h"
+#include "string.h"
+
+
+#include "w_task.h"
 #include "wifi/wifi.h"
 
-static const char *TAG = "EVENT_LOOP";
 
+TaskHandle_t wifi_task_handle = NULL;
 
+static char dyn_ssid[33];
+static char dyn_pass[85];
 
+void wifi_connect_task(void *pv) {
+    for(;;) {
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY); 
+        
+        vTaskDelay(pdMS_TO_TICKS(500)); 
+
+        mutexPrint("WIFI", "Credentials received. Stopping BLE and starting WiFi...", 'I');
+        
+        
+        wifi_conf(dyn_ssid, dyn_pass);
+    }
+}
+
+void trigger_wifi_provisioning(const char* ssid, const char* pass) {
+   
+    strlcpy(dyn_ssid, ssid, sizeof(dyn_ssid));
+    strlcpy(dyn_pass, pass, sizeof(dyn_pass));
+
+    if (wifi_task_handle != NULL) {
+        xTaskNotifyGive(wifi_task_handle);
+    }
+}
