@@ -14,7 +14,7 @@
 
 
 static const char* TAG = "CORE_DUMP";
-static const char *TAGB = "BOOT";
+//static const char *TAGB = "BOOT";
 
 
 void check_panic_data(esp_core_dump_summary_t *sum) {

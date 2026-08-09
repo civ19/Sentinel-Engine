@@ -20,8 +20,7 @@ void wifi_connect_task(void *pv) {
         
         vTaskDelay(pdMS_TO_TICKS(500)); 
 
-        mutexPrint("WIFI", "Credentials received. Stopping BLE and starting WiFi...", 'I');
-        
+        mutex_log('I', "WIFI_TASK", "Credentials received. Stopping BLE and starting WiFi...");
         
         wifi_conf(dyn_ssid, dyn_pass);
     }
