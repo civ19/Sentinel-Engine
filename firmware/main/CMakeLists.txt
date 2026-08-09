@@ -29,6 +29,7 @@ idf_component_register(
         nvs_flash
         console
         driver
+        bt
 
 
     EMBED_TXTFILES
