@@ -9,6 +9,8 @@
 
 #include "abstractions/abstractions.h"
 #include "nvs_store/nvs_store.h"
+#include "nvs.h"
+#include "nvs_flash.h"
 
 
 static const char* TAG = "CORE_DUMP";
@@ -49,6 +51,6 @@ void check_panic_data(esp_core_dump_summary_t *sum) {
 
 
 void activate_safe_mode() {
-  
+
 }
 
