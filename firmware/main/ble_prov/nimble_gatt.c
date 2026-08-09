@@ -80,9 +80,9 @@ static int pass_write(struct os_mbuf *om) {
     return 0;
 }
 
-static int mqtt_uri_write(struct os_mbuf *om) {
+static int server_uri_write(struct os_mbuf *om) {
     uint16_t len = OS_MBUF_PKTLEN(om); // getting len, clear buf, test rc, do to flat to write
-    if(len > MAX_MQTT_LEN) return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+    if(len > MAX_SVR_LEN) return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
     memset(mqtt_uri, 0, sizeof(mqtt_uri));
 
     int rc = ble_hs_mbuf_to_flat(om, mqtt_uri, len, NULL);
