@@ -7,6 +7,9 @@
 #include "esp_pm.h"
 #include "freertos/semphr.h"
 #include "esp_ota_ops.h"
+#include "esp_console.h"  
+#include "linenoise/linenoise.h"
+#include "driver/uart.h" 
 
 #include  "abstractions/abstractions.h"
 #include "sentinel_debug/debug.h"
@@ -14,6 +17,9 @@
 #include "ota/ota.h"
 #include "tasks/ota_task.h"
 #include "nvs_store/nvs_store.h"
+#include "tasks/cmd_task.h"
+#include "tasks/w_task.h"
+#include "sentinel_debug/cmd.h"
 
 const char *TAG = "MAIN";
 void trigger_null_ptr_crash() {
@@ -35,7 +41,17 @@ void loop_validation_task(void *pv) {
 
 }
 
+void init_console() {
+    esp_console_config_t cons_conf = ESP_CONSOLE_CONFIG_DEFAULT();
+    cons_conf.max_cmdline_args = 8;
+    esp_console_init(&cons_conf);
+
+    esp_cmd_conf();
+
+}
 void app_main(void) {
+
+
     
     //check if we have no boot loops first. secuity checks
     if((init_nvs() != ESP_OK)) esp_restart();
@@ -50,6 +66,14 @@ void app_main(void) {
     }
     
     //main app tasks
+
+    init_console();
+
+    xTaskCreatePinnedToCore(diagnostic_console_task, "ConsoleTask", 4096, NULL, 5, NULL, 1);
+
+
+
+
 
     
 }

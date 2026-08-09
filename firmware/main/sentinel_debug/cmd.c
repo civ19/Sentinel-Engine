@@ -77,7 +77,7 @@ static int do_clear_nvs(int argc, char **argv) {
     }
 
     mutex_log('I', TAG, "User issued manual clear override. Resetting nvs crash counter...");
-    if (nvs_reset() == ESP_OK) {
+    if (nvs_reset(1) == ESP_OK) {
         printf("NVS variables wiped and committed. Run 'reboot' to attempt normal startup.\n");
         return 0;
     } else {
