@@ -31,6 +31,8 @@ void loop_validation_task(void *pv) {
     mutex_log('I', TAG, "Device stabilized successfully. Clearing boot tracking metrics.");
     nvs_reset(0);
 
+    vTaskDelete(NULL);
+
 }
 
 void app_main(void) {
@@ -38,9 +40,14 @@ void app_main(void) {
     //check if we have no boot loops first. secuity checks
     if((init_nvs() != ESP_OK)) esp_restart();
 
-
+    xTaskCreatePinnedToCore(loop_validation_task, "LoopValid", 4096, NULL, 1, NULL, 0);
 
     esp_err_t ret = esp_ota_mark_app_valid_cancel_rollback(); 
+
+    if(isBootLoop) {
+        activate_safe_mode();
+        return;
+    }
     
     //main app tasks
 
