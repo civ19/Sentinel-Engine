@@ -99,6 +99,16 @@ void esp_rst_reason(void) {
             mutex_log('I', TAG, "Reset reason: %d.", rst);
     }
 }
+
+void init_console() {
+    esp_console_config_t cons_conf = ESP_CONSOLE_CONFIG_DEFAULT();
+    cons_conf.max_cmdline_args = 8;
+    esp_console_init(&cons_conf);
+
+    esp_cmd_conf();
+
+}
+
 void activate_safe_mode() {
 
     mutex_log('I', "SAFE_MODE", "--- SENTINEL SAFE MODE: MAIN MENU ---");
@@ -106,5 +116,7 @@ void activate_safe_mode() {
     esp_wake_reason();
 
     esp_rst_reason();
+
+    init_console();
 }
 

@@ -41,14 +41,8 @@ void loop_validation_task(void *pv) {
 
 }
 
-void init_console() {
-    esp_console_config_t cons_conf = ESP_CONSOLE_CONFIG_DEFAULT();
-    cons_conf.max_cmdline_args = 8;
-    esp_console_init(&cons_conf);
 
-    esp_cmd_conf();
 
-}
 void app_main(void) {
 
 
