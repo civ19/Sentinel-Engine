@@ -57,7 +57,7 @@ bool isBootLoop(void) {
     //if cnt > 3 its boot looped 
     //fuirst get anbd set the boot counter. if its >3 then we return true. else return false
 
-    int32_t n = nvs_increment_cb("boot_cnt");
+    int32_t n = nvs_increment_cb("boot_count");
     if(n>=3) return true;
     else return false;
     
