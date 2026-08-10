@@ -14,8 +14,8 @@
 #define SERVER_IP "172.17.35.33" //will provision this later via nimble
 #define OTA_URL_SIZE 256
 
-const char *TAG = "OTA";
-const char *TAGS = "OTA Server";
+static const char *TAG = "OTA";
+static const char *TAGS = "OTA Server";
 
 static int status_code = 0;
 static char global_hash_header[65] = {0}; //sha256 hash buf

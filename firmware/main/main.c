@@ -21,7 +21,7 @@
 #include "tasks/w_task.h"
 #include "sentinel_debug/cmd.h"
 
-const char *TAG = "MAIN";
+static const char *TAG = "MAIN";
 void trigger_null_ptr_crash() {
 
     ESP_LOGI("SYS", "About to crash now...");
@@ -59,6 +59,7 @@ void app_main(void) {
     xTaskCreatePinnedToCore(loop_validation_task, "LoopValid", 4096, NULL, 1, NULL, 0);
 
     esp_err_t ret = esp_ota_mark_app_valid_cancel_rollback(); 
+    if(ret != ESP_OK)  mutex_log('E', TAG, "Failed to cancel rollback (Normal if running from factory slot). rc=%d", ret);
 
     if(isBootLoop()) {
         activate_safe_mode();

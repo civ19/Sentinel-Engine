@@ -4,6 +4,7 @@
 #include "host/ble_hs.h"
 #include "abstractions/abstractions.h"
 #include "tasks/w_task.h"
+#include "tasks/server_task.h"
 
 
 
