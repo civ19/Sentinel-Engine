@@ -3,13 +3,10 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "esp_log.h"
-#include "esp_pm.h"
 #include "freertos/semphr.h"
-#include "esp_ota_ops.h"
-#include "esp_console.h"  
-#include "linenoise/linenoise.h"
-#include "driver/uart.h" 
+#include "esp_event.h"
+#include "freertos/event_groups.h"
+
 
 #include  "abstractions/abstractions.h"
 #include "sentinel_debug/debug.h"
@@ -19,7 +16,10 @@
 #include "nvs_store/nvs_store.h"
 #include "tasks/cmd_task.h"
 #include "tasks/w_task.h"
+#include "tasks/server_task.h"
 #include "sentinel_debug/cmd.h"
+#include "wifi/wifi.h"
+#include "ble_prov/prov_master.h"
 
 static const char *TAG = "MAIN";
 void trigger_null_ptr_crash() {
@@ -42,35 +42,41 @@ void loop_validation_task(void *pv) {
 }
 
 
-
 void app_main(void) {
 
+    wifi_event_group = xEventGroupCreate();
+    printMutex = xSemaphoreCreateMutex();
 
     
     //check if we have no boot loops first. secuity checks
     if((init_nvs() != ESP_OK)) esp_restart();
 
-    xTaskCreatePinnedToCore(loop_validation_task, "LoopValid", 4096, NULL, 1, NULL, 0);
-
-    esp_err_t ret = esp_ota_mark_app_valid_cancel_rollback(); 
-    if(ret != ESP_OK)  mutex_log('E', TAG, "Failed to cancel rollback (Normal if running from factory slot). rc=%d", ret);
-
     if(isBootLoop()) {
         activate_safe_mode();
         return;
     }
+
+    xTaskCreatePinnedToCore(loop_validation_task, "LoopValid", 4096, NULL, 1, NULL, 0);
+    esp_err_t ret = esp_ota_mark_app_valid_cancel_rollback(); 
+    if(ret != ESP_OK)  mutex_log('E', TAG, "Failed to cancel rollback (Normal if running from factory slot). rc=%d", ret);
+
+    xTaskCreatePinnedToCore(wifi_connect_task, "wifiConnect", 4096, NULL, 5, &wifi_task_handle, 1);
+    xTaskCreatePinnedToCore(server_prov_task, "serverConnect", 4096, NULL, 5, &server_ip_handle, 1);
+    if(ble_prov_task() != ESP_OK) {
+        mutex_log('E', TAG, "Failed to init NimBLE Provisioning Stack.");
+        return;
+    }
+
+    //gatekeeper
+    ESP_LOGI("MAIN", "BLE active. Waiting for wifi BT provisioning...");
+    xEventGroupWaitBits(wifi_event_group, WIFI_CONN_BIT, pdFALSE, pdTRUE, portMAX_DELAY);
+    ESP_LOGI("MAIN", "Wifi set. Waiting for MQTT BT provisioning...");
+    xEventGroupWaitBits(wifi_event_group, , pdFALSE, pdTRUE, portMAX_DELAY);
+    ESP_LOGI("MAIN", "We are online!");
+
     
-    //main app tasks
-
-    init_console();
-
-    xTaskCreatePinnedToCore(diagnostic_console_task, "ConsoleTask", 4096, NULL, 5, NULL, 1);
-
-
-
-
-
-    
+ 
+ 
 }
 
 

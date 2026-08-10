@@ -7,6 +7,7 @@
 #include "esp_task_wdt.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/event_groups.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -15,6 +16,7 @@
 #include "ota/ota.h"
 #include "sentinel_debug/cmd.h"
 #include "tasks/server_task.h"
+#include "wifi/wifi.h"
 
 const char *TAG = "OTA";
 const char *TAGS = "OTA Server";
@@ -29,6 +31,7 @@ void perform_ota_task(void *pv) {
     
     init_ota(&ota_handle, get_ip());
 
+
     updated_check(ota_handle, status_code);
 
     ESP_ERROR_CHECK(esp_task_wdt_add(NULL));
@@ -37,21 +40,26 @@ void perform_ota_task(void *pv) {
 
     mutex_log('I', TAG, "Downloading new firmware binary");
 
+    esp_err_t ret;
     for(;;) { //streaming data chunks for downloading and flashing
-        esp_err_t ret = esp_https_ota_perform(ota_handle);
+        ret = esp_https_ota_perform(ota_handle);
         esp_task_wdt_reset(); //feeding the dog
         if(ret != ESP_ERR_HTTPS_OTA_IN_PROGRESS) break;
     }
+
+    xEventGroupSetBits(app_evt_group, SVR_CONN_BIT);
 
     if(esp_https_ota_is_complete_data_received(ota_handle)) {
         esp_err_t ret = esp_https_ota_finish(ota_handle);
         if(ret == ESP_OK) {
             mutex_log('I', TAG, "Firmware Update Complete! Rebooting...");
             esp_restart();
+        } else {
+            mutex_log('E', TAG, "OTA Finish Failed. Return code: 0x%x", ret);
         }
-        else mutex_log('E', TAG, "OTA Finish Failed. Return code: 0x%x", ret);
     } else {
         mutex_log('E', TAG, "OTA Data Stream Failed or connection timed out.");
+        xEventGroupClearBits(app_evt_group, SVR_CONN_BIT); 
         esp_https_ota_abort(ota_handle);
     }
 

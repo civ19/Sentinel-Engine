@@ -3,7 +3,7 @@
 
 #define WIFI_CONN_BIT (1 << 0)
 
-extern EventGroupHandle_t wifi_event_group;
+extern EventGroupHandle_t app_evt_group;
 
 void init_nvs_event();
 void init_wifi_hardware();

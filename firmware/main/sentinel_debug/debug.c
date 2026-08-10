@@ -12,6 +12,7 @@
 #include "nvs_store/nvs_store.h"
 #include "nvs.h"
 #include "nvs_flash.h"
+#include "tasks/cmd_task.h"
 
 
 static const char* TAG = "CORE_DUMP";
@@ -38,11 +39,10 @@ void check_panic_data(esp_core_dump_summary_t *sum) {
                 ESP_LOGD(TAG, "Fault Address EXCVADDR: 0x%" PRIx32, sum->ex_info.exc_vaddr);
                 ESP_LOGD(TAG, "SP: %p", sp);
                 ESP_LOGD(TAG, "Return Addr LR (A0): 0x08%" PRIx32, sum->ex_info.exc_a);
+
+                xSemaphoreGive(printMutex);
                 
             } 
-
-            xSemaphoreGive(printMutex);
-            
         } 
 
         else ESP_LOGI(TAG, "Clean Sys Boot. No crash data detected.");
@@ -107,6 +107,7 @@ void init_console() {
 
     esp_cmd_conf();
 
+    xTaskCreatePinnedToCore(diagnostic_console_task, "ConsoleTask", 4096, NULL, 5, NULL, 1);
 }
 
 void activate_safe_mode() {

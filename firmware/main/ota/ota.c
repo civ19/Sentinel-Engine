@@ -86,6 +86,8 @@ esp_err_t init_ota(esp_https_ota_handle_t *out_handle, const char* dyn_svr_ip) {
         .event_handler = _http_event_handler,
     };
 
+    //here
+
     esp_https_ota_config_t ota_conf = { //ota conf
         .http_config = &http_conf,
     };
