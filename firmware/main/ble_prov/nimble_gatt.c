@@ -3,7 +3,7 @@
 #include "esp_log.h"
 #include "host/ble_hs.h"
 #include "abstractions/abstractions.h"
-
+#include "tasks/w_task.h"
 
 
 
@@ -84,11 +84,11 @@ static int server_ip_write(struct os_mbuf *om) {
     if(len > MAX_SVR_LEN) return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
     memset(server_ip, 0, sizeof(server_ip));
 
-    int rc = ble_hs_mbuf_to_flat(om, mqtt_uri, len, NULL);
+    int rc = ble_hs_mbuf_to_flat(om, server_ip, len, NULL);
     if(rc != 0) return BLE_ATT_ERR_UNLIKELY;
 
     mutex_log('I', TAG, "Successfully saved mqtt broker uri securely.");
-    trigger_mqtt_prov(mqtt_uri);
+    trigger_server_prov(server_ip);
     return 0;
 
 
