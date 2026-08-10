@@ -21,6 +21,8 @@
 const char *TAG = "OTA";
 const char *TAGS = "OTA Server";
 
+static bool upd_success = true; //cjhecking if it successfully updated. if not, the bit got the svr gets cleared
+
 void perform_ota_task(void *pv) {
     mutex_log('I', TAG, "Starting OTA Update Task...");
     
@@ -56,13 +58,15 @@ void perform_ota_task(void *pv) {
             esp_restart();
         } else {
             mutex_log('E', TAG, "OTA Finish Failed. Return code: 0x%x", ret);
+            upd_success = false;
         }
     } else {
         mutex_log('E', TAG, "OTA Data Stream Failed or connection timed out.");
-        xEventGroupClearBits(app_evt_group, SVR_CONN_BIT); 
+        upd_success = false;
         esp_https_ota_abort(ota_handle);
     }
 
+    if(upd_success == false) xEventGroupClearBits(app_evt_group, SVR_CONN_BIT); 
     set_ota_bool(false);
     esp_task_wdt_delete(NULL);
     vTaskDelete(NULL);
