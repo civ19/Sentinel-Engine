@@ -25,8 +25,8 @@ void check_panic_data(esp_core_dump_summary_t *sum) {
     if(sum == NULL) return;
 
     if(sum != NULL) {
-        //if theres a summary => core dump availabvle
-        //now we check if it was able to get the summary
+        //if theres a summary then that'll mean core dump availabvle
+        //now this is when I check if it was able to get the summary
         if(esp_core_dump_get_summary(sum) == ESP_OK) {
             if(xSemaphoreTake(printMutex, portMAX_DELAY)) {
                 ESP_LOGD(TAG, "--- Found a crash report from the previous session! ---");
@@ -73,6 +73,28 @@ void esp_wake_reason(void) {
     }
 }
 
+void esp_rst_reason(void) {
+    esp_reset_reason_t rst = esp_reset_reason();
+
+
+    switch(rst) {
+        case ESP_RST_POWERON:
+            mutex_log('I', TAG, "Esp reset by Manual Cold boot! Normal reboot.");
+        break;
+        case ESP_RST_WDT:
+            mutex_log('I', TAG, "Esp hard reset by General Watchdog.");
+        break;
+        case ESP_RST_TASK_WDT:
+            mutex_log('I', TAG, "Esp hard reset by Task Watchdog.");
+        break;
+        case ESP_RST_SW:
+            mutex_log('I', TAG, "Esp reset by calling esp_restart(). Hint: Could be OTA");
+        break;
+
+        default:
+            mutex_log('I', TAG, "Reset reason: %d.", rst);
+    }
+}
 void activate_safe_mode() {
 
 }
