@@ -16,6 +16,7 @@
 
 static const char* TAG = "CORE_DUMP";
 static const char* TAGW = "ESP_WAKE";
+static const char* TAGR = "ESP_RESET";
 //static const char *TAGB = "BOOT";
 
 
@@ -53,6 +54,8 @@ void check_panic_data(esp_core_dump_summary_t *sum) {
 
 void esp_wake_reason(void) {
 
+    printf("\n--- WAKE REASON ---\n");
+
     uint32_t cause = esp_sleep_get_wakeup_causes();
 
     if(cause == 0) {
@@ -76,6 +79,7 @@ void esp_wake_reason(void) {
 void esp_rst_reason(void) {
     esp_reset_reason_t rst = esp_reset_reason();
 
+    printf("\n--- RESET REASON ---\n");
 
     switch(rst) {
         case ESP_RST_POWERON:
@@ -97,5 +101,10 @@ void esp_rst_reason(void) {
 }
 void activate_safe_mode() {
 
+    mutex_log('I', "SAFE_MODE", "--- SENTINEL SAFE MODE: MAIN MENU ---");
+
+    esp_wake_reason();
+
+    esp_rst_reason();
 }
 
