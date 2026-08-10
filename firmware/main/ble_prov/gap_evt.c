@@ -47,3 +47,38 @@ void ble_app_advertise(void) {
         mutex_log('I', "BLE_GAP", "Ble Advertising started successfully. Waiting for phone...");
     }
 }
+
+int ble_gap_event(struct ble_gap_event *event, void* arg) { //gap event handler !
+
+    switch (event->type) {
+        case BLE_GAP_EVENT_CONNECT:
+            if(event->connect.status == 0) mutex_log('I', "BLE_GAP", "BLE Smartphone Link Established. Ready for provisioning...");
+            else {
+                mutex_log('E', "BLE_GAP", "Event connection failed. Error status: %d. Restarting advertisement...", event->connect.status);
+                ble_app_advertise();
+            }
+            return 0;
+        break;
+
+        case BLE_GAP_EVENT_DISCONNECT:
+            mutex_log('W', "BLE_GAP", "Disconnected from client. Error status:%d", event->disconnect.reason);
+            ble_app_advertise();
+            return 0;
+        
+        break;
+
+        case BLE_GAP_EVENT_MTU:
+            mutex_log('I', "BLE_GAP", "MTU size successfully negotiated %d bytes", event->mtu.value);
+            return 0;
+
+        break;
+
+        default:
+            return 0;
+        break;
+
+
+    }
+    
+   
+}
