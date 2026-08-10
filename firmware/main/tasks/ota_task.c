@@ -14,6 +14,7 @@
 #include "abstractions/abstractions.h"
 #include "ota/ota.h"
 #include "sentinel_debug/cmd.h"
+#include "tasks/server_task.h"
 
 const char *TAG = "OTA";
 const char *TAGS = "OTA Server";
@@ -26,7 +27,7 @@ void perform_ota_task(void *pv) {
 
     esp_https_ota_handle_t ota_handle = NULL;
     
-    init_ota(&ota_handle);
+    init_ota(&ota_handle, get_ip());
 
     updated_check(ota_handle, status_code);
 

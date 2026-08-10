@@ -13,6 +13,7 @@ idf_component_register(
          "sentinel_debug/cmd.c"
          "ble_prov/nimble_gatt.c"
          "tasks/server_task.c"
+         "ble_prov/gap_evt.c"
 
     INCLUDE_DIRS "."
 

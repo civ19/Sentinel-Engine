@@ -16,4 +16,4 @@ char *get_hash_header();
 
 esp_err_t validate_img_header(esp_app_desc_t *new_app_info);
 esp_err_t _http_event_handler(esp_http_client_event_t* evt);
-esp_err_t init_ota(esp_https_ota_handle_t *out_handle);
+esp_err_t init_ota(esp_https_ota_handle_t *out_handle, const char* dyn_svr_ip);

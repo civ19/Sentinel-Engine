@@ -4,10 +4,6 @@
 #include "abstractions/abstractions.h"
 
 
-
-static const char *TAG = "BLE_GAP";
-
-
 void ble_app_advertise(void) {
     struct ble_hs_adv_fields fields; //reset fields
     memset(&fields, 0, sizeof(fields));
@@ -21,7 +17,7 @@ void ble_app_advertise(void) {
 
     int rc = ble_gap_adv_set_fields(&fields);
     if(rc != 0) {
-        mutex_log('E', "ADV", "Error setting advertisement fields. rc=%d", rc);
+        mutex_log('E', "BLE_GAP", "Error setting advertisement fields. rc=%d", rc);
         return;
     }
 
@@ -29,13 +25,13 @@ void ble_app_advertise(void) {
     memset(&resp_fields, 0, sizeof(resp_fields));
 
     resp_fields.uuids128 = (const ble_uuid128_t *)BLE_UUID128_DECLARE(0xed, 0x71, 0xa1, 0x2e, 0xd3, 0x75, 0x49, 0x73,  0xad, 0x57, 
-        0x17, 0x72, 0xab, 0x39, 0x10, 0x11),);
+        0x17, 0x72, 0xab, 0x39, 0x10, 0x11);
     resp_fields.num_uuids128 = 1;
     resp_fields.uuids128_is_complete = 1;
 
     rc = ble_gap_adv_rsp_set_fields(&resp_fields);
     if(rc != 0) {
-        mutex_log('E', "ADV", "Error setting scan response fields. rc=%d", rc);
+        mutex_log('E', "BLE_GAP", "Error setting scan response fields. rc=%d", rc);
         return;
     }
 
@@ -46,8 +42,8 @@ void ble_app_advertise(void) {
 
     rc = ble_gap_adv_start(BLE_OWN_ADDR_PUBLIC, NULL, BLE_HS_FOREVER, &ad_params, ble_gap_event, NULL);
     if(rc != 0) {
-        mutex_log('E', "ADV", "Error setting advertisement. rc=%d", rc);
+        mutex_log('E', "BLE_GAP", "Error setting advertisement. rc=%d", rc);
     } else {
-        mutexPrint("ADV", "Ble Advertising started successfully. Waiting for phone...", 'I');
+        mutex_log('I', "BLE_GAP", "Ble Advertising started successfully. Waiting for phone...");
     }
 }

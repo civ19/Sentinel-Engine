@@ -9,16 +9,19 @@
 #include <stdio.h>
 
 #include "abstractions/abstractions.h"
+#include "tasks/server_task.h"
 
 
-#define SERVER_IP "172.17.35.33" //will provision this later via nimble
+#define SERVER_IP 16 
 #define OTA_URL_SIZE 256
 
 static const char *TAG = "OTA";
 static const char *TAGS = "OTA Server";
 
+
 static int status_code = 0;
 static char global_hash_header[65] = {0}; //sha256 hash buf
+char svr_dyn_ip[SERVER_IP] = {0};
 
 int get_status_code() {return status_code;} //getters. i'll be using these in ota_task.c
 char* get_hash_header() {return global_hash_header;}
@@ -65,11 +68,12 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
     return ESP_OK;
 }
 
-esp_err_t init_ota(esp_https_ota_handle_t *out_handle) { //double ptr 
+esp_err_t init_ota(esp_https_ota_handle_t *out_handle, const char* dyn_svr_ip) { //double ptr 
 
     const esp_app_desc_t* app_desc = esp_app_get_description(); //app desc
     char url[OTA_URL_SIZE];
-    snprintf(url, sizeof(url), "https://%s:8080/api/ota/check?ver=%s", SERVER_IP, app_desc->version);
+
+    snprintf(url, sizeof(url), "https://%s:8080/api/ota/check?ver=%s", dyn_svr_ip, app_desc->version);
 
 
     //http init

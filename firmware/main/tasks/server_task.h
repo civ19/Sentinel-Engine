@@ -5,3 +5,5 @@
 extern TaskHandle_t server_ip_handle;
 void server_prov_task(void *pv);
 void trigger_server_prov(const char* dyn_server_ip);
+
+const char* get_ip(void);
