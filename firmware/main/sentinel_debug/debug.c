@@ -5,7 +5,8 @@
 #include "esp_cpu.h"
 #include "esp_console.h"  
 #include "linenoise/linenoise.h"
-#include "driver/uart.h"    
+#include "driver/uart.h"   
+#include "esp_sleep.h" 
 
 #include "abstractions/abstractions.h"
 #include "nvs_store/nvs_store.h"
@@ -14,6 +15,7 @@
 
 
 static const char* TAG = "CORE_DUMP";
+static const char* TAGW = "ESP_WAKE";
 //static const char *TAGB = "BOOT";
 
 
@@ -49,6 +51,27 @@ void check_panic_data(esp_core_dump_summary_t *sum) {
     
 }
 
+void esp_wake_reason(void) {
+
+    uint32_t cause = esp_sleep_get_wakeup_causes();
+
+    if(cause == 0) {
+        mutex_log('I', TAGW, "Esp wake by Std Power-On/RST");
+        return; 
+    }
+    if (cause & BIT(ESP_SLEEP_WAKEUP_TIMER)) {
+        mutex_log('I', TAGW, "Esp wake by Wakeup Timer");
+    }
+    
+    if (cause & BIT(ESP_SLEEP_WAKEUP_EXT0)) {
+        mutex_log('I', TAGW, "Esp wake by GPIO or btn.");
+    }
+
+    uint32_t masks = BIT(ESP_SLEEP_WAKEUP_TIMER) | BIT(ESP_SLEEP_WAKEUP_EXT0);
+    if (cause & ~masks) {
+        mutex_log('I', TAGW, "Other raw active wake reasons mask: 0x%" PRIx32, cause);
+    }
+}
 
 void activate_safe_mode() {
 
