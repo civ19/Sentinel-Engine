@@ -4,23 +4,55 @@
 #include "nimble/nimble_port_freertos.h"
 #include "services/gap/ble_svc_gap.h"
 #include "services/gatt/ble_svc_gatt.h"
+#include "nimble/nimble_port_freertos.h"
+
+
 #include "nimble_gatt.h"
 #include "gap_evt.h"
 #include "abstractions/abstractions.h"
 
-#define TAGB "BLE_INIT"
+static const char* TAG = "BLE_TASK";
 
-static uint8_t own_addr_type = BLE_OWN_ADDR_PUBLIC;
+void nimble_port_task(void* param);
 
-//sync cb
-static void ble_app_on_sync(void) {
-    int rc = ble_hs_id_infer_auto(0, &own_addr_type);
-    if(rc != 0) {
-        mutex_log('E', TAGB, "Fatal: Failed to infer ble address type. rc=%d", rc);
-        return;
+esp_err_t ble_prov_task(void) {
+
+    int rc = nimble_port_init();
+    if(rc!=0) {
+        mutex_log('E', TAG, "Init failed! Memory alloc arror: rc=%d", rc);
+        return ESP_FAIL;
     }
 
-    mutexPrint(TAGB, "Hardware sync complete. Addr type verified.", 'I');
-    ble_app_advertise();
+    ble_hs_cfg.sync_cb = ble_sync_radio; //syncing the radio 
+
+    ble_svc_gap_init();
+    ble_svc_gatt_init();
+
+    //profile structure init and validation
+    rc = ble_gatts_count_cfg(gatt_svr_svcs); //allocating the right memory for tghe gatt table
+    if(rc!=0) {
+        mutex_log('E', TAG, "GATT Table Memory alloc arror: rc=%d", rc);
+        return ESP_FAIL;
+    }
+
+    rc = ble_gatts_add_svcs(gatt_svr_svcs);
+    if(rc!=0) {
+        mutex_log('E', TAG, "Failed to add GATT table to BT Database pool: rc=%d", rc);
+        return ESP_FAIL;
+    }
+
+    //name for dev
+    rc = ble_svc_gap_device_name_set("ESP32_Node");
+    if(rc!=0) {
+        mutex_log('E', TAG, "Failed to apply public gap node name: rc=%d", rc);
+        return ESP_FAIL;
+    }
+
+    //task on core 
+    mutex_log('I', TAG, "Starting async BT task on core %d...", xPortGetCoreID());
+    nimble_port_freertos_init(nimble_port_task);
+
+    return ESP_OK;
+
 
 }

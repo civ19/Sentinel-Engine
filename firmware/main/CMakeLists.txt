@@ -14,6 +14,7 @@ idf_component_register(
          "ble_prov/nimble_gatt.c"
          "tasks/server_task.c"
          "ble_prov/gap_evt.c"
+         "ble_prov/prov_master.c"
 
     INCLUDE_DIRS "."
 

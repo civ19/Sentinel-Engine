@@ -58,7 +58,7 @@ void ble_sync_radio(void) {
     }
 
 
-    mutexPrint("BLE_GAP", "Hardware sync complete. Addr type verified.", 'I');
+    mutex_log('I',"BLE_GAP", "Hardware sync complete. Addr type verified.");
     ble_app_advertise();
 
 }
