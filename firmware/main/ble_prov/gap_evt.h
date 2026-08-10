@@ -4,4 +4,4 @@
 
 void ble_app_advertise(void);
 int ble_gap_event(struct ble_gap_event *event, void *arg);
-
+void ble_sync_radio(void);

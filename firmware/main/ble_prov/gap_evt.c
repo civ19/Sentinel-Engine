@@ -3,6 +3,7 @@
 #include "esp_log.h"
 #include "abstractions/abstractions.h"
 
+static uint8_t addr_type = BLE_OWN_ADDR_PUBLIC;
 
 void ble_app_advertise(void) {
     struct ble_hs_adv_fields fields; //reset fields
@@ -46,6 +47,20 @@ void ble_app_advertise(void) {
     } else {
         mutex_log('I', "BLE_GAP", "Ble Advertising started successfully. Waiting for phone...");
     }
+}
+
+//this is for syncing host and controller(bt radio)
+void ble_sync_radio(void) {
+    int rc = ble_hs_id_infer_auto(0, &addr_type);
+    if(rc != 0) {
+        mutex_log('E', "BLE_GAP", "Fatal: Failed to infer ble address type. rc=%d", rc);
+        return;
+    }
+
+
+    mutexPrint("BLE_GAP", "Hardware sync complete. Addr type verified.", 'I');
+    ble_app_advertise();
+
 }
 
 int ble_gap_event(struct ble_gap_event *event, void* arg) { //gap event handler !
