@@ -44,7 +44,7 @@ void loop_validation_task(void *pv) {
 
 void app_main(void) {
 
-    wifi_event_group = xEventGroupCreate();
+    app_evt_group = xEventGroupCreate();
     printMutex = xSemaphoreCreateMutex();
 
     
@@ -68,14 +68,11 @@ void app_main(void) {
     }
 
     //gatekeeper
-    ESP_LOGI("MAIN", "BLE active. Waiting for wifi BT provisioning...");
-    xEventGroupWaitBits(wifi_event_group, WIFI_CONN_BIT, pdFALSE, pdTRUE, portMAX_DELAY);
-    ESP_LOGI("MAIN", "Wifi set. Waiting for MQTT BT provisioning...");
-    xEventGroupWaitBits(wifi_event_group, , pdFALSE, pdTRUE, portMAX_DELAY);
-    ESP_LOGI("MAIN", "We are online!");
-
-    
- 
+    ESP_LOGI(TAG, "BLE active. Waiting for wifi BT provisioning...");
+    xEventGroupWaitBits(app_evt_group, WIFI_CONN_BIT, pdFALSE, pdTRUE, portMAX_DELAY);
+    ESP_LOGI(TAG, "Wifi set. Waiting for MQTT BT provisioning...");
+    xEventGroupWaitBits(app_evt_group, SVR_CONN_BIT, pdFALSE, pdTRUE, portMAX_DELAY);
+    ESP_LOGI(TAG, "We are online!");
  
 }
 
