@@ -9,11 +9,11 @@ void diagnostic_console_task(void* pv) {
     printf("\n --- SENTINEL-OS SAFE MODE ---\n");
     printf("Please type 'help' to see available commands.\n\n");
 
-    linenoiseSetPrompt("Sentinel> ");
+    
 
     for(;;) {
         
-        char *line = limenoise(NULL);
+        char *line = limenoise("Sentinel> ");
 
         if(line == NULL) continue;
 

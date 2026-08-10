@@ -16,16 +16,13 @@ esp_err_t nvs_reset(bool cmd) {
     //cmd meaning if it came from the reset crash AND boot cmd. if not, were just gonna reset the boot only not the crash t
     esp_err_t ret;
 
-    if(cmd == false) { //as in, if its not the cmd but from just resetting the boot only 
-        ret = nvs_set_i32(nvs_h, "boot_count", 0);
-        if(ret != ESP_OK) mutex_log('E',TAG, "NVS write failed for Boot Count. Error: %s", esp_err_to_name(ret));
+    ret = nvs_set_i32(nvs_h, "boot_count", 0);
+    if(ret != ESP_OK) mutex_log('E',TAG, "NVS write failed for Boot Count. Error: %s", esp_err_to_name(ret));
 
-        return ret;
+    if(cmd == true) { //as in, if its not the cmd but from just resetting the boot only 
+        ret = nvs_set_i32(nvs_h, "crash_count", 0);
+        if(ret != ESP_OK) mutex_log('E',TAG, "NVS write failed for Crash Count. Error: %s", esp_err_to_name(ret));
     }
-    
-
-    ret = nvs_set_i32(nvs_h, "crash_count", 0);
-    if(ret != ESP_OK) mutex_log('E',TAG, "NVS write failed for Crash Count. Error: %s", esp_err_to_name(ret));
 
     ret = nvs_commit(nvs_h);
     if (ret != ESP_OK) {
