@@ -24,9 +24,9 @@ void server_prov_task(void *pv) {
 
 const char* get_ip(void) {return dyn_svr_ip;}
 
-void trigger_mqtt_prov(const char* ip) {
-    mutex_log('I', "SVR", "Trigger received IP: %s", ip);
-    strlcpy((char*) dyn_svr_ip, ip,  sizeof(dyn_svr_ip));
+void trigger_server_prov(const char* dyn_svr_ip) {
+    mutex_log('I', "SVR", "Trigger received IP: %s", dyn_svr_ip);
+    strlcpy((char*) dyn_svr_ip, dyn_svr_ip,  sizeof(dyn_svr_ip));
 
     if(server_ip_handle != NULL) xTaskNotifyGive(server_ip_handle);
 

@@ -2,13 +2,14 @@
 #include <string.h>
 #include "esp_log.h"
 #include "host/ble_hs.h"
+
 #include "abstractions/abstractions.h"
 #include "tasks/w_task.h"
 #include "tasks/server_task.h"
 
 
 
-const char *TAG = "BLE_GATT";
+static const char *TAG = "BLE_GATT";
 
 static int gatt_svr_access_cb(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctx, void* arg);
 

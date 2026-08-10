@@ -1,3 +1,4 @@
+#include "safe_cmd.h"
 #include "esp_log.h"
 #include "esp_cpu.h"
 #include "esp_console.h"  
@@ -5,11 +6,13 @@
 #include "driver/uart.h"    
 #include "freertos/FreeRTOS.h"
 #include "esp_core_dump.h"
+#include <stdio.h>
 
 #include "abstractions/abstractions.h"
 #include "nvs_store/nvs_store.h"
 #include "tasks/ota_task.h"
 #include "debug.h"
+
 
 static const char* TAG = "CMD";
 static bool isOtaRunning =  false;

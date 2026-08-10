@@ -1,20 +1,20 @@
 idf_component_register(
     SRCS "main.c"
          "sentinel_debug/debug.c"
+         "sentinel_debug/safe_cmd.c"
          "wdt/wdt.c"
          "abstractions/abstractions.c"
          "ota/ota.c"
          "wifi/wifi.c"
          "tasks/ota_task.c"
          "tasks/w_task.c"
-         "nvs_store/nvs_store.c"
-         "sentinel_debug/cmd.c"
-         "tasks/cmd_task.c"
-         "sentinel_debug/cmd.c"
-         "ble_prov/nimble_gatt.c"
          "tasks/server_task.c"
+         "tasks/cmd_task.c"
+         "nvs_store/nvs_store.c"
+         "ble_prov/nimble_gatt.c"
          "ble_prov/gap_evt.c"
          "ble_prov/prov_master.c"
+         
 
     INCLUDE_DIRS "."
 

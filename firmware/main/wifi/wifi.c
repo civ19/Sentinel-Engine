@@ -11,9 +11,7 @@
 
 static const char *TAG = "EVENT_LOOP";
 
-
-
-EventGroupHandle_t wifi_event_group = NULL;
+EventGroupHandle_t app_evt_group = NULL;
 
 static uint8_t retry_ctr = 0;
 static uint8_t max_retry = 5;
@@ -44,14 +42,14 @@ static void wifi_event_callback(void *arg, esp_event_base_t dept, int32_t event_
             
         }
         reconnect(); //reconnect asap
-        xEventGroupClearBits(wifi_event_group, WIFI_CONN_BIT); //not ready. clearing bit 0
+        xEventGroupClearBits(app_evt_group, WIFI_CONN_BIT); //not ready. clearing bit 0
        
     }
 
     else if(dept == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         retry_ctr = 0;
         ip_event_got_ip_t *event_data = (ip_event_got_ip_t* )data;
-        xEventGroupSetBits(wifi_event_group, WIFI_CONN_BIT);
+        xEventGroupSetBits(app_evt_group, WIFI_CONN_BIT);
         if(xSemaphoreTake(printMutex, portMAX_DELAY)) { 
             ESP_LOGI(TAG, "Got IP: " IPSTR, IP2STR(&event_data->ip_info.ip));
             xSemaphoreGive(printMutex);

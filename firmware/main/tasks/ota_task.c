@@ -14,7 +14,7 @@
 
 #include "abstractions/abstractions.h"
 #include "ota/ota.h"
-#include "sentinel_debug/cmd.h"
+#include "sentinel_debug/safe_cmd.h"
 #include "tasks/server_task.h"
 #include "wifi/wifi.h"
 

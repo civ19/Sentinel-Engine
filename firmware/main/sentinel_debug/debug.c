@@ -13,12 +13,12 @@
 #include "nvs.h"
 #include "nvs_flash.h"
 #include "tasks/cmd_task.h"
+#include "safe_cmd.h"
 
 
 static const char* TAG = "CORE_DUMP";
 static const char* TAGW = "ESP_WAKE";
 static const char* TAGR = "ESP_RESET";
-//static const char *TAGB = "BOOT";
 
 
 void check_panic_data(esp_core_dump_summary_t *sum) {
@@ -45,7 +45,7 @@ void check_panic_data(esp_core_dump_summary_t *sum) {
             } 
         } 
 
-        else ESP_LOGI(TAG, "Clean Sys Boot. No crash data detected.");
+        else mutex_log('I', TAG, "Clean Sys Boot. No crash data detected.");
         
     }
 
@@ -83,20 +83,20 @@ void esp_rst_reason(void) {
 
     switch(rst) {
         case ESP_RST_POWERON:
-            mutex_log('I', TAG, "Esp reset by Manual Cold boot! Normal reboot.");
+            mutex_log('I', TAGR, "Esp reset by Manual Cold boot! Normal reboot.");
         break;
         case ESP_RST_WDT:
-            mutex_log('I', TAG, "Esp hard reset by General Watchdog.");
+            mutex_log('I', TAGR, "Esp hard reset by General Watchdog.");
         break;
         case ESP_RST_TASK_WDT:
-            mutex_log('I', TAG, "Esp hard reset by Task Watchdog.");
+            mutex_log('I', TAGR, "Esp hard reset by Task Watchdog.");
         break;
         case ESP_RST_SW:
-            mutex_log('I', TAG, "Esp reset by calling esp_restart(). Hint: Could be OTA");
+            mutex_log('I', TAGR, "Esp reset by calling esp_restart(). Hint: Could be OTA");
         break;
 
         default:
-            mutex_log('I', TAG, "Reset reason: %d.", rst);
+            mutex_log('I', TAGR, "Reset reason: %d.", rst);
     }
 }
 

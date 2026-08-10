@@ -17,18 +17,11 @@
 #include "tasks/cmd_task.h"
 #include "tasks/w_task.h"
 #include "tasks/server_task.h"
-#include "sentinel_debug/cmd.h"
+#include "sentinel_debug/safe_cmd.h"
 #include "wifi/wifi.h"
 #include "ble_prov/prov_master.h"
 
 static const char *TAG = "MAIN";
-void trigger_null_ptr_crash() {
-
-    ESP_LOGI("SYS", "About to crash now...");
-    vTaskDelay(pdMS_TO_TICKS(500));
-    volatile int* bad_ptr = NULL;
-    *bad_ptr = 42;
-}
 
 void loop_validation_task(void *pv) {
     mutex_log('I', TAG, "Verifying Boot Integrity...");

@@ -4,7 +4,7 @@
 #include "nimble/nimble_port_freertos.h"
 #include "services/gap/ble_svc_gap.h"
 #include "services/gatt/ble_svc_gatt.h"
-#include "nimble/nimble_port_freertos.h"
+#include "freertos/task.h"
 
 
 #include "nimble_gatt.h"
@@ -13,7 +13,13 @@
 
 static const char* TAG = "BLE_TASK";
 
-void nimble_port_task(void* param);
+void ble_host_task(void* param) {
+    mutex_log('I', TAG, "Starting async BT task on core %d...", xPortGetCoreID());
+    nimble_port_run();
+
+    mutex_log('I', TAG, "NimBLE event loop exited. Destroyed thread context...", 'W');
+    vTaskDelete(NULL);
+}
 
 esp_err_t ble_prov_task(void) {
 
@@ -50,7 +56,7 @@ esp_err_t ble_prov_task(void) {
 
     //task on core 
     mutex_log('I', TAG, "Starting async BT task on core %d...", xPortGetCoreID());
-    nimble_port_freertos_init(nimble_port_task);
+    nimble_port_freertos_init(ble_host_task);
 
     return ESP_OK;
 
