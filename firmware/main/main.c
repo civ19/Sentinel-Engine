@@ -60,7 +60,7 @@ void app_main(void) {
 
     esp_err_t ret = esp_ota_mark_app_valid_cancel_rollback(); 
 
-    if(isBootLoop) {
+    if(isBootLoop()) {
         activate_safe_mode();
         return;
     }

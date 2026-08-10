@@ -10,6 +10,8 @@ idf_component_register(
          "nvs_store/nvs_store.c"
          "sentinel_debug/cmd.c"
          "tasks/cmd_task.c"
+         "sentinel_debug/cmd.c"
+         "ble_prov/nimble_gatt.c"
 
     INCLUDE_DIRS "."
 
@@ -20,7 +22,6 @@ idf_component_register(
         esp_system
         espcoredump
         freertos
-        cjson
         esp_http_client
         esp_https_ota
         esp_wifi

@@ -13,7 +13,7 @@ void diagnostic_console_task(void* pv) {
 
     for(;;) {
         
-        char *line = limenoise("Sentinel> ");
+        char *line = linenoise("Sentinel> ");
 
         if(line == NULL) continue;
 
@@ -24,6 +24,6 @@ void diagnostic_console_task(void* pv) {
         if(ret == ESP_ERR_NOT_FOUND) printf("Unrecognized command. Type 'help' for more options.");
         else if (ret == ESP_ERR_INVALID_ARG) printf("Empty command line.\n");
 
-        limenoiseFree(line);
+        linenoiseFree(line);
     }
 }
