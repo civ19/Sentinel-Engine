@@ -17,7 +17,7 @@
 static const char* TAG = "CMD";
 static bool isOtaRunning =  false;
 
-static int do_force_ota(int argc, char** argv);
+//static int do_force_ota(int argc, char** argv);
 static int do_reboot(int argc, char** argv);
 static int do_clear_nvs(int argc, char **argv);
 static int do_core_dump(int argc, char **argv);
@@ -37,13 +37,13 @@ void esp_cmd_conf(void) {
     esp_console_cmd_register(&clear_cmd);
 
 
-    const esp_console_cmd_t ota_cmd = {
+    /*const esp_console_cmd_t ota_cmd = {
         .command = "ota_force",
         .help =  "Bypasses safe moden lock to trigger an immediate OTA check if the current firmware is too bugged. Do ota_force.",
         .func = &do_force_ota,
     };
 
-    esp_console_cmd_register(&ota_cmd);
+    esp_console_cmd_register(&ota_cmd);*/
 
     const esp_console_cmd_t reboot_cmd = {
         .command = "reboot",
@@ -102,7 +102,7 @@ static int do_reboot(int argc, char** argv) {
     return 0;
 
 }
-
+/*
 static int do_force_ota(int argc, char** argv) {
     if(argc > 1) {
         printf("Error: Invalid syntax. Simply type 'ota_force' with no extra arguments.\n");
@@ -130,7 +130,7 @@ static int do_force_ota(int argc, char** argv) {
 
 
 
-}
+}*/
 
 static int do_core_dump(int argc, char **argv) {
     if(argc > 1) {

@@ -9,11 +9,11 @@
 #include "esp_sleep.h" 
 #include <stdio.h>
 #include <inttypes.h>
+#include "esp_vfs_dev.h"
 
 #include "nvs_store/nvs_store.h"
 #include "nvs.h"
 #include "nvs_flash.h"
-#include "tasks/cmd_task.h"
 #include "safe_cmd.h"
 
 
@@ -95,13 +95,33 @@ void esp_rst_reason(void) {
 }
 
 void init_console() {
-    esp_console_config_t cons_conf = ESP_CONSOLE_CONFIG_DEFAULT();
-    cons_conf.max_cmdline_args = 8;
-    esp_console_init(&cons_conf);
+    
+    esp_log_level_set("*", ESP_LOG_NONE); //silencing the uart
 
-    esp_cmd_conf();
+    
+    esp_console_repl_t *repl = NULL; //repl config
+    esp_console_repl_config_t repl_config = ESP_CONSOLE_REPL_CONFIG_DEFAULT();
+    repl_config.prompt = "Sentinel> ";
+    repl_config.max_history_len = 10;
 
-    xTaskCreatePinnedToCore(diagnostic_console_task, "ConsoleTask", 4096, NULL, 5, NULL, 1);
+    
+    esp_cmd_conf(); 
+
+    esp_console_dev_uart_config_t uart_config = ESP_CONSOLE_DEV_UART_CONFIG_DEFAULT(); //uart configuration
+    uart_config.channel = CONFIG_ESP_CONSOLE_UART_NUM; //on uart 0
+
+
+    esp_err_t ret = esp_console_new_repl_uart(&uart_config, &repl_config, &repl); //allocating memory for repl
+    
+    if (ret != ESP_OK) {
+        printf("Failed to initialize REPL: %s\n", esp_err_to_name(ret));
+        return;
+    }
+
+    
+    printf("\n --- SENTINEL-OS SAFE MODE: CMD INTERFACE ---\n");
+    printf("Type 'help' for commands.\n\n");
+    esp_console_start_repl(repl); //actually, well, running repl
 }
 
 void activate_safe_mode() {
@@ -109,7 +129,7 @@ void activate_safe_mode() {
     esp_log_level_set("*", ESP_LOG_NONE); 
     printf("\033[2J\033[H"); 
 
-    printf("--- SENTINEL SAFE MODE: MAIN MENU ---\n\n");
+    printf("--- SENTINEL-OS SAFE MODE: MAIN MENU ---\n\n");
 
     esp_wake_reason();
     printf("\n");

@@ -9,7 +9,6 @@ idf_component_register(
          "tasks/ota_task.c"
          "tasks/w_task.c"
          "tasks/server_task.c"
-         "tasks/cmd_task.c"
          "nvs_store/nvs_store.c"
          "ble_prov/nimble_gatt.c"
          "ble_prov/gap_evt.c"

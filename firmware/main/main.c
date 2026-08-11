@@ -14,7 +14,6 @@
 #include "ota/ota.h"
 #include "tasks/ota_task.h"
 #include "nvs_store/nvs_store.h"
-#include "tasks/cmd_task.h"
 #include "tasks/w_task.h"
 #include "tasks/server_task.h"
 #include "sentinel_debug/safe_cmd.h"
@@ -61,12 +60,12 @@ void app_main(void) {
     activate_safe_mode();
 
     
-/*
+
     if(isBootLoop()) {
         activate_safe_mode();
         return;
-    } */
-   
+    } 
+
     init_wifi_hardware();
     sync_time();
 
