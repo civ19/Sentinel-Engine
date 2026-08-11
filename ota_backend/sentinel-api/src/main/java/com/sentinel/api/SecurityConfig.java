@@ -20,17 +20,15 @@ public class SecurityConfig { //basically says whos allowed to do whgat. literal
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    @Bean //firewall rules
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf(csrf -> csrf.disable()) //cause stateless
+        return http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET,"/api/ota/**" ).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/coffees/**").hasRole("ADMIN")
-                        .anyRequest().authenticated())
-                .oauth2ResourceServer(oath2 -> oath2.jwt(Customizer.withDefaults())).build(); //let spring handle validation
-    }
+                        .requestMatchers("/api/ota/**").permitAll() // OTA is open
+                        .anyRequest().authenticated()               // Everything else is locked
+                )
 
-    public AuthenticationManager authManager(AuthenticationConfiguration conf) throws Exception { //checks against db: how were doing it
-        return conf.getAuthenticationManager();
+                .httpBasic(Customizer.withDefaults())
+                .build();
     }
 }
