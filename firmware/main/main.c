@@ -34,6 +34,19 @@ void loop_validation_task(void *pv) {
 
 }
 
+#include "esp_sntp.h"
+
+void sync_time() {
+    esp_sntp_setoperatingmode(SNTP_OPMODE_POLL);
+    esp_sntp_setservername(0, "pool.ntp.org");
+    esp_sntp_init();
+    
+    int retry = 0;
+    while (sntp_get_sync_status() == SNTP_SYNC_STATUS_RESET && ++retry < 10) {
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
+}
+
 
 void app_main(void) {
 
@@ -45,7 +58,6 @@ void app_main(void) {
 
     if((init_nvs() != ESP_OK)) esp_restart();
 
-
     
 
     if(isBootLoop()) {
@@ -54,6 +66,7 @@ void app_main(void) {
     }
 
     init_wifi_hardware();
+    sync_time();
 
     xTaskCreatePinnedToCore(loop_validation_task, "LoopValid", 4096, NULL, 1, NULL, 0);
     esp_err_t ret = esp_ota_mark_app_valid_cancel_rollback(); 

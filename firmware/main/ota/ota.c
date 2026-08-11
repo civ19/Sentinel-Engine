@@ -19,14 +19,13 @@ static const char *TAG = "OTA";
 static const char *TAGS = "OTA Server";
 
 
-static int status_code = 0;
 static char global_hash_header[65] = {0}; //sha256 hash buf
-char svr_dyn_ip[SERVER_IP] = {0};
+static int status_code = 0;
 
-int get_status_code() {return status_code;} //getters. i'll be using these in ota_task.c
 char* get_hash_header() {return global_hash_header;}
 
 esp_err_t updated_check(esp_https_ota_handle_t handle, int status) {
+
     if(status == 304) {
         mutex_log('I', TAGS, "Backend returned 304: Firmware is already up to date.");
         esp_err_t ret = esp_https_ota_abort(handle);
@@ -36,6 +35,8 @@ esp_err_t updated_check(esp_https_ota_handle_t handle, int status) {
         }
 
     }
+
+    return ESP_OK;
 }
 
 esp_err_t validate_img_header(esp_app_desc_t *new_app_info) {
@@ -74,18 +75,23 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
 esp_err_t init_ota(esp_https_ota_handle_t *out_handle, const char* dyn_svr_ip) { //double ptr 
 
     const esp_app_desc_t* app_desc = esp_app_get_description(); //app desc
+
+    mutex_log('I', TAG, "DEBUG - Value of passed IP: '%s'", dyn_svr_ip);
+
+
+
     char url[OTA_URL_SIZE];
 
-    snprintf(url, sizeof(url), "https://%s:8080/api/ota/check?ver=%s", dyn_svr_ip, app_desc->version);
+    snprintf(url, sizeof(url), "https://%s:8443/api/ota/check?ver=%s", dyn_svr_ip, app_desc->version);
 
 
     //http init
     esp_http_client_config_t http_conf = {
-        .url = url, //adding  nimBLE prov on this later
+        .url = url, 
         .cert_pem = (const char *)server_cert_pem_start,
         .skip_cert_common_name_check = true, //skipping cn
         .keep_alive_enable = true,
-        .timeout_ms = 10000,
+        .timeout_ms = 15000,
         .event_handler = _http_event_handler,
     };
 

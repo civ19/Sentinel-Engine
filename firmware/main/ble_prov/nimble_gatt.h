@@ -7,4 +7,6 @@
 #define MAX_PASS_LEN 64
 #define MAX_SVR_LEN 64
 
+extern char server_ip[];
 extern const struct ble_gatt_svc_def gatt_svr_svcs[];
+

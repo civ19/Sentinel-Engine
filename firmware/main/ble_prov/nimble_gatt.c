@@ -15,7 +15,7 @@ static int gatt_svr_access_cb(uint16_t conn_handle, uint16_t attr_handle, struct
 
 static char wifi_ssid[MAX_SSID_LEN + 1]; //ssid, pass and broker containers
 static char wifi_pass[MAX_PASS_LEN + 1];
-static char server_ip[MAX_SVR_LEN + 1];
+char server_ip[MAX_SVR_LEN + 1];
 
 static const struct ble_gatt_chr_def prov_features[] = {
     { //wifi ssid

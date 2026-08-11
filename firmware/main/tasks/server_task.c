@@ -7,8 +7,8 @@
 
 #include "abstractions/abstractions.h"
 #include "wifi/wifi.h"
+#include "ble_prov/nimble_gatt.h"
 
-static char dyn_svr_ip[MAX_SVR_LEN + 1];
 
 TaskHandle_t server_ip_handle = NULL;
 
@@ -24,13 +24,11 @@ void server_prov_task(void *pv) {
 
 }
 
-const char* get_ip(void) {return dyn_svr_ip;}
 
 void trigger_server_prov(const char* dyn_svr_ip) {
     mutex_log('I', "SVR", "Trigger received IP: %s", dyn_svr_ip);
 
     xEventGroupClearBits(app_evt_group, SVR_CONN_BIT); //clearing the bit before i copy it and then setting the bit after it copies successfully
-    strlcpy((char*) dyn_svr_ip, dyn_svr_ip,  sizeof(dyn_svr_ip));
 
     if(server_ip_handle != NULL) xTaskNotifyGive(server_ip_handle);
 

@@ -16,6 +16,7 @@
 #include "ota/ota.h"
 #include "sentinel_debug/safe_cmd.h"
 #include "wdt/wdt.h"
+#include "ble_prov/nimble_gatt.h"
 
 
 const char *TAG = "OTA";
@@ -28,29 +29,57 @@ void perform_ota_task(void *pv) {
     wdt_ota_conf();
     esp_https_ota_handle_t ota_handle = NULL;
 
-    esp_err_t b_ret = init_ota(&ota_handle, get_ip());
+    mutex_log('I', TAG, "DEBUG IN TASK - Value of passed IP: '%s'", server_ip);
+
+    esp_err_t b_ret = init_ota(&ota_handle, server_ip);
     if(b_ret != ESP_OK) {
         set_ota_bool(false);
         vTaskDelete(NULL);
+        return;
     }
 
     mutex_log('I', TAG, "Starting OTA Update Task...");
     
-    int status_code = get_status_code();
+    int status_code = esp_https_ota_get_status_code(ota_handle);
+    if(updated_check(ota_handle, status_code) != ESP_OK || status_code == 304) {
+        mutex_log('I', TAG, "Clean exit: App is fully up to date.");
+        set_ota_bool(false);
+        vTaskDelete(NULL); // Abort handled inside updated_check, terminate safely
+        return;
+    }
+
     char *hash_header = get_hash_header();
 
 
-    updated_check(ota_handle, status_code);
+    
 
     ESP_ERROR_CHECK(esp_task_wdt_add(NULL));
 
     if(strlen(hash_header) > 0) mutex_log('I', TAGS, "Server provided SHA256 checksum: %s", hash_header);
+    
 
     mutex_log('I', TAG, "Downloading new firmware binary");
 
     esp_err_t ret;
+    bool validated = false;
+    
     for(;;) { //streaming data chunks for downloading and flashing
         ret = esp_https_ota_perform(ota_handle);
+
+        if(!validated) {
+            esp_app_desc_t new_app_info;
+            if(esp_https_ota_get_img_desc(ota_handle, &new_app_info) == ESP_OK) {
+                if(validate_img_header(&new_app_info) != ESP_OK) {
+                    mutex_log('E', TAG, "Image validation failed! Aborting...");
+                    esp_https_ota_abort(ota_handle);
+                    break;
+                } 
+
+                mutex_log('I', TAG, "Header validated. Proceeding with download...");
+                validated = true;
+            }
+        }
+        
         esp_task_wdt_reset(); //feeding the dog
         if(ret != ESP_ERR_HTTPS_OTA_IN_PROGRESS) break;
     }
