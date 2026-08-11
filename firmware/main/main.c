@@ -58,13 +58,15 @@ void app_main(void) {
 
     if((init_nvs() != ESP_OK)) esp_restart();
 
-    
+    activate_safe_mode();
 
+    
+/*
     if(isBootLoop()) {
         activate_safe_mode();
         return;
-    }
-
+    } */
+   
     init_wifi_hardware();
     sync_time();
 

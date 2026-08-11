@@ -96,7 +96,7 @@ static int do_reboot(int argc, char** argv) {
         return 1;
     }
 
-    mutex_log('I', TAG, "User issued manual reboot. Rebooting ESP32...");
+    printf("User issued manual reboot. Rebooting ESP32...");
     esp_restart(); //if manual then print esp restarted successfuly : reminder
     
     return 0;
