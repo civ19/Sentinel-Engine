@@ -26,11 +26,14 @@ char svr_dyn_ip[SERVER_IP] = {0};
 int get_status_code() {return status_code;} //getters. i'll be using these in ota_task.c
 char* get_hash_header() {return global_hash_header;}
 
-void updated_check(esp_https_ota_handle_t handle, int status) {
+esp_err_t updated_check(esp_https_ota_handle_t handle, int status) {
     if(status == 304) {
         mutex_log('I', TAGS, "Backend returned 304: Firmware is already up to date.");
-        esp_https_ota_abort(handle);
-        vTaskDelete(NULL);
+        esp_err_t ret = esp_https_ota_abort(handle);
+        if(ret != ESP_OK) {
+            mutex_log('E', TAGS, "Failed to abort OTA when already up to date.");
+            return ret;
+        }
 
     }
 }
@@ -95,7 +98,6 @@ esp_err_t init_ota(esp_https_ota_handle_t *out_handle, const char* dyn_svr_ip) {
     esp_err_t ret = esp_https_ota_begin(&ota_conf, out_handle);
     if(ret != ESP_OK) {
         mutex_log('E', TAG, "ESP HTTPS OTA Begin failed (Check network connection or cert data)");
-        vTaskDelete(NULL);
     }
 
     return ret;

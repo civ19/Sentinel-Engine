@@ -2,7 +2,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-
+#define SVR_CONN_BIT (1 << 1)
 
 extern TaskHandle_t server_ip_handle;
 void server_prov_task(void *pv);

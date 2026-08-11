@@ -15,8 +15,8 @@
 #include "abstractions/abstractions.h"
 #include "ota/ota.h"
 #include "sentinel_debug/safe_cmd.h"
-#include "tasks/server_task.h"
-#include "wifi/wifi.h"
+#include "wdt/wdt.h"
+
 
 const char *TAG = "OTA";
 const char *TAGS = "OTA Server";
@@ -24,14 +24,20 @@ const char *TAGS = "OTA Server";
 static bool upd_success = true; //cjhecking if it successfully updated. if not, the bit got the svr gets cleared
 
 void perform_ota_task(void *pv) {
+
+    wdt_ota_conf();
+    esp_https_ota_handle_t ota_handle = NULL;
+
+    esp_err_t b_ret = init_ota(&ota_handle, get_ip());
+    if(b_ret != ESP_OK) {
+        set_ota_bool(false);
+        vTaskDelete(NULL);
+    }
+
     mutex_log('I', TAG, "Starting OTA Update Task...");
     
     int status_code = get_status_code();
     char *hash_header = get_hash_header();
-
-    esp_https_ota_handle_t ota_handle = NULL;
-    
-    init_ota(&ota_handle, get_ip());
 
 
     updated_check(ota_handle, status_code);
@@ -49,7 +55,6 @@ void perform_ota_task(void *pv) {
         if(ret != ESP_ERR_HTTPS_OTA_IN_PROGRESS) break;
     }
 
-    xEventGroupSetBits(app_evt_group, SVR_CONN_BIT);
 
     if(esp_https_ota_is_complete_data_received(ota_handle)) {
         esp_err_t ret = esp_https_ota_finish(ota_handle);
@@ -66,7 +71,7 @@ void perform_ota_task(void *pv) {
         esp_https_ota_abort(ota_handle);
     }
 
-    if(upd_success == false) xEventGroupClearBits(app_evt_group, SVR_CONN_BIT); 
+    
     set_ota_bool(false);
     esp_task_wdt_delete(NULL);
     vTaskDelete(NULL);

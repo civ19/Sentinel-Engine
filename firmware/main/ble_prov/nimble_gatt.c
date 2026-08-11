@@ -89,7 +89,7 @@ static int server_ip_write(struct os_mbuf *om) {
     int rc = ble_hs_mbuf_to_flat(om, server_ip, len, NULL);
     if(rc != 0) return BLE_ATT_ERR_UNLIKELY;
 
-    mutex_log('I', TAG, "Successfully saved mqtt broker uri securely.");
+    mutex_log('I', TAG, "Successfully saved IP to NVS securely.");
     trigger_server_prov(server_ip);
     return 0;
 
