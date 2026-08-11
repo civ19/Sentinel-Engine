@@ -15,6 +15,3 @@ void wdt_ota_conf(void) {
 }
 
 
-void wdt_test_task(void *pv) {
-    while(1); //hung deliberately
-}
