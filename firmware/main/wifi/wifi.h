@@ -5,7 +5,7 @@
 
 extern EventGroupHandle_t app_evt_group;
 
-void init_nvs_event();
+void reg_wifi_events();
 void init_wifi_hardware();
 void wifi_conf(const char *dyn_ssid, const char *dyn_pass);
 

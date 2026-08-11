@@ -1,7 +1,7 @@
 #include "wdt.h"
 #include "esp_task_wdt.h"
 #include "freertos/task.h"
-
+/*
 TaskHandle_t test_handle = NULL;
 TaskHandle_t ota_h = NULL;
 
@@ -20,4 +20,4 @@ void wdt_init(void) {
 
 void wdt_test_task(void *pv) {
     while(1); //hung deliberately
-}
+}*/

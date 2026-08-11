@@ -54,8 +54,6 @@ esp_err_t ble_prov_task(void) {
         return ESP_FAIL;
     }
 
-    //task on core 
-    mutex_log('I', TAG, "Starting async BT task on core %d...", xPortGetCoreID());
     nimble_port_freertos_init(ble_host_task);
 
     return ESP_OK;
