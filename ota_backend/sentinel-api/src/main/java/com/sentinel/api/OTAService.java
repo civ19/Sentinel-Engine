@@ -28,10 +28,18 @@ public class OTAService {
         Path l_path = getLatestFirmwarePath();
 
         //get path based on ver
-        String fileName = l_path.getFileName().toString(); //name of the file at path
-        String l_ver = fileName.replace("sentinel_v", "").replace(".bin", "");
+        String fileName = l_path.getFileName().toString();
 
-        if(curr_ver.equals(l_ver)) return null; //status 304 if no updates
+        String baseName = fileName.substring(0, fileName.lastIndexOf('.'));
+
+        String l_ver = baseName.substring(baseName.lastIndexOf('v') + 2); //starts at sentinel_v
+
+        System.out.println("DEBUG: Server thinks latest version is: [" + l_ver + "]");
+        System.out.println("DEBUG: ESP32 says it is running: [" + curr_ver + "]");
+
+        if(curr_ver.trim().equals(l_ver.trim())) {
+            return null;
+        }
 
         File bin_f = l_path.toFile(); //file obj
         String hash = calc_sha256(l_path);
