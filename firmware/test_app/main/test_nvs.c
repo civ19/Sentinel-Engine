@@ -16,7 +16,14 @@ void reset(void) { //starting from a clean slate. kinda like @BeforeEach then cl
     
 }
 
-TEST_CASE("Boot loop detector actually returns after 3 sequential reboots, so we can run Safe mode", ["NVS"])
+TEST_CASE("Boot loop detector returns TRUE after 3 sequential reboots, so we can run Safe mode", "[SAFE_MODE_TRIGGER]")
 {
-    nvs_increment_cb("boot_cnt");
+    for(int i = 0; i<3; i++) nvs_increment_cb("boot_count");
+
+    TEST_ASSERT_TRUE(isBootLoop());
+}
+
+TEST_CASE("Boot loop detector returns FALSE for LESS than 3 sequential reboots, so we can run Safe mode", "[SAFE_MODE_TRIGGER]")
+{
+    
 }
