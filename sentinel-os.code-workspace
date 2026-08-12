@@ -1,7 +1,15 @@
 {
-    "folders": [
-        {
-            "path": "firmware"
-        }
-    ]
+  "folders": [
+    {
+      "name": "Sentinel OS - Production",
+      "path": "firmware"
+    },
+    {
+      "name": "Sentinel OS - Unit Tests",
+      "path": "firmware/test_app"
+    }
+  ],
+  "settings": {
+    "C_Cpp.default.compileCommands": "${workspaceFolder:Sentinel OS - Unit Tests}/build/compile_commands.json"
+  }
 }

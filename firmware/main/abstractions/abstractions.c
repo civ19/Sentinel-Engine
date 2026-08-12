@@ -3,12 +3,15 @@
 #include "freertos/semphr.h"
 #include "esp_log.h"
 
+#include <assert.h>
 
 SemaphoreHandle_t printMutex = NULL;
 
 
-void mutex_log(char type, const char *tag, const char *format, ...)
-{
+void mutex_log(char type, const char *tag, const char *format, ...) {
+
+    assert(tag != NULL);
+    assert(format != NULL);
     esp_log_level_t level;
 
     switch (type) {

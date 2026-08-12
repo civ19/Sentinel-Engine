@@ -2,6 +2,7 @@
 #include <string.h>
 #include "esp_log.h"
 #include "host/ble_hs.h"
+#include <assert.h>
 
 #include "abstractions/abstractions.h"
 #include "tasks/w_task.h"
@@ -56,6 +57,8 @@ const struct ble_gatt_svc_def gatt_svr_svcs[] = {
 };
 
 static int ssid_write(struct os_mbuf *om) {
+    assert(om != NULL); // null packets will break it. might as well make sure it doesnt happen
+
     uint16_t len = OS_MBUF_PKTLEN(om);
     if (len > MAX_SSID_LEN) return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
 
@@ -68,6 +71,8 @@ static int ssid_write(struct os_mbuf *om) {
 }
 
 static int pass_write(struct os_mbuf *om) {
+    assert(om != NULL);
+
     uint16_t len = OS_MBUF_PKTLEN(om);
     if (len > MAX_PASS_LEN) return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
 
@@ -82,6 +87,8 @@ static int pass_write(struct os_mbuf *om) {
 }
 
 static int server_ip_write(struct os_mbuf *om) {
+    assert(om != NULL);
+
     uint16_t len = OS_MBUF_PKTLEN(om); // getting len, clear buf, test rc, do to flat to write
     if(len > MAX_SVR_LEN) return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
     memset(server_ip, 0, sizeof(server_ip));

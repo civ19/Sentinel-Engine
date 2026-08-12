@@ -27,7 +27,8 @@ void wifi_connect_task(void *pv) {
 }
 
 void trigger_wifi_provisioning(const char* ssid, const char* pass) {
-   
+    assert(ssid != NULL);
+    
     strlcpy(dyn_ssid, ssid, sizeof(dyn_ssid));
     strlcpy(dyn_pass, pass, sizeof(dyn_pass));
 

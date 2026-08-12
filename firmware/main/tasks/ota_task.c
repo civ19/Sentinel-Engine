@@ -26,6 +26,8 @@ static bool upd_success = true; //cjhecking if it successfully updated. if not, 
 
 void perform_ota_task(void *pv) {
 
+    assert(server_ip != NULL);
+
     wdt_ota_conf();
     esp_https_ota_handle_t ota_handle = NULL;
 
@@ -49,9 +51,8 @@ void perform_ota_task(void *pv) {
     }
 
     char *hash_header = get_hash_header();
+    assert(hash_header != NULL);
 
-
-    
 
     ESP_ERROR_CHECK(esp_task_wdt_add(NULL));
 
