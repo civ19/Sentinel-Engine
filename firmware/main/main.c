@@ -55,11 +55,7 @@ void app_main(void) {
     app_evt_group = xEventGroupCreate();
     printMutex = xSemaphoreCreateMutex();
 
-    if((init_nvs() != ESP_OK)) esp_restart();
-
-    activate_safe_mode();
-
-    
+    if((init_nvs() != ESP_OK)) esp_restart();    
 
     if(isBootLoop()) {
         activate_safe_mode();

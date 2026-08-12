@@ -3,7 +3,6 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-#include "test_ota.h"
 
 int sum(int a, int b) {
     return a+b;
