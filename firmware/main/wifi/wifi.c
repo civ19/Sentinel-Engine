@@ -5,6 +5,7 @@
 #include "esp_wifi.h" 
 #include "esp_netif.h" 
 #include "freertos/event_groups.h"
+#include <assert.h>
 
 #include "abstractions/abstractions.h"
 #include "wifi.h"
@@ -82,6 +83,9 @@ void init_wifi_hardware() {
 }
 
 void wifi_conf(const char *dyn_ssid, const char *dyn_pass) {
+    assert(dyn_ssid != NULL);
+    assert(dyn_pass != NULL);
+
     wifi_config_t wifi_conf = {};
     strlcpy((char*)wifi_conf.sta.ssid, dyn_ssid, sizeof(wifi_conf.sta.ssid));
     strlcpy((char*)wifi_conf.sta.password, dyn_pass, sizeof(wifi_conf.sta.password));
