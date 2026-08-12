@@ -3,6 +3,7 @@
 #include "nvs_flash.h"
 #include "esp_err.h"
 #include "esp_log.h"
+#include <assert.h>
 
 #include "abstractions/abstractions.h"
 #include "sentinel_debug/debug.h"
@@ -14,6 +15,8 @@ static nvs_handle_t nvs_h;
 
 esp_err_t nvs_reset(bool cmd) {
     //cmd meaning if it came from the reset crash AND boot cmd. if not, were just gonna reset the boot only not the crash t
+    assert(nvs_h != 0);
+    
     esp_err_t ret;
 
     ret = nvs_set_i32(nvs_h, "boot_count", 0);
@@ -33,6 +36,7 @@ esp_err_t nvs_reset(bool cmd) {
 }
 
 esp_err_t init_nvs(void) { //initializing nvs 
+
     esp_err_t ret = nvs_flash_init();
     if(ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
         ESP_ERROR_CHECK(nvs_flash_erase());
@@ -48,6 +52,8 @@ esp_err_t init_nvs(void) { //initializing nvs
     if (ret != ESP_OK) {
         mutex_log('E', TAG, "NVS namespace open failed.");
     }
+
+    assert(nvs_h != 0);
 
     return ret;
 
@@ -66,6 +72,10 @@ bool isBootLoop(void) {
 
 
 int32_t nvs_increment_cb(const char *key) {
+
+    assert(nvs_h != 0);
+    assert(key != NULL);
+
     int32_t cnt = 0;
 
     //reading curr val:

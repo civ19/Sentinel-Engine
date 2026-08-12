@@ -51,8 +51,6 @@ void perform_ota_task(void *pv) {
     char *hash_header = get_hash_header();
 
 
-    
-
     ESP_ERROR_CHECK(esp_task_wdt_add(NULL));
 
     if(strlen(hash_header) > 0) mutex_log('I', TAGS, "Server provided SHA256 checksum: %s", hash_header);

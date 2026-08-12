@@ -7,6 +7,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <assert.h>
 
 #include "abstractions/abstractions.h"
 #include "tasks/server_task.h"
@@ -25,7 +26,8 @@ static int status_code = 0;
 char* get_hash_header() {return global_hash_header;}
 
 esp_err_t updated_check(esp_https_ota_handle_t handle, int status) {
-
+    assert(handle != 0);
+    
     if(status == 304) {
         mutex_log('I', TAGS, "Backend returned 304: Firmware is already up to date.");
         esp_err_t ret = esp_https_ota_abort(handle);
@@ -40,6 +42,8 @@ esp_err_t updated_check(esp_https_ota_handle_t handle, int status) {
 }
 
 esp_err_t validate_img_header(esp_app_desc_t *new_app_info) {
+    assert(new_app_info != NULL); //so no one pushes in a bad pointer in here
+
     if(new_app_info == NULL) {
         return ESP_ERR_INVALID_ARG;
     }
@@ -54,6 +58,9 @@ esp_err_t validate_img_header(esp_app_desc_t *new_app_info) {
 
 
 esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
+
+    assert(evt != NULL);
+
     switch(evt->event_id) {
         case HTTP_EVENT_ON_HEADER:
             if(strcasecmp(evt->header_key, "X-Sentinel-Hash") == 0) {
@@ -72,13 +79,12 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
     return ESP_OK;
 }
 
-esp_err_t init_ota(esp_https_ota_handle_t *out_handle, const char* dyn_svr_ip) { //double ptr 
+esp_err_t init_ota(esp_https_ota_handle_t *out_handle, const char* dyn_svr_ip) {
+    assert(dyn_svr_ip != NULL);
 
     const esp_app_desc_t* app_desc = esp_app_get_description(); //app desc
 
     mutex_log('I', TAG, "DEBUG - Value of passed IP: '%s'", dyn_svr_ip);
-
-
 
     char url[OTA_URL_SIZE];
 
@@ -89,13 +95,12 @@ esp_err_t init_ota(esp_https_ota_handle_t *out_handle, const char* dyn_svr_ip) {
     esp_http_client_config_t http_conf = {
         .url = url, 
         .cert_pem = (const char *)server_cert_pem_start,
-        .skip_cert_common_name_check = true, //skipping cn
+        .skip_cert_common_name_check = true, 
         .keep_alive_enable = true,
         .timeout_ms = 15000,
         .event_handler = _http_event_handler,
     };
 
-    //here
 
     esp_https_ota_config_t ota_conf = { //ota conf
         .http_config = &http_conf,
