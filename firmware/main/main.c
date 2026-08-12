@@ -19,6 +19,7 @@
 #include "sentinel_debug/safe_cmd.h"
 #include "wifi/wifi.h"
 #include "ble_prov/prov_master.h"
+#include "esp_sntp.h"
 
 static const char *TAG = "MAIN";
 
@@ -33,7 +34,6 @@ void loop_validation_task(void *pv) {
 
 }
 
-#include "esp_sntp.h"
 
 void sync_time() {
     esp_sntp_setoperatingmode(SNTP_OPMODE_POLL);
@@ -56,11 +56,7 @@ void app_main(void) {
     printMutex = xSemaphoreCreateMutex();
 
     if((init_nvs() != ESP_OK)) esp_restart();
-
-    activate_safe_mode();
-
     
-
     if(isBootLoop()) {
         activate_safe_mode();
         return;
