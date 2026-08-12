@@ -17,7 +17,6 @@ TEST_CASE("Sum function works with positive ints", "[math]")
 
 void app_main(void) {
 
-    
     process_data(NULL);
 
     
