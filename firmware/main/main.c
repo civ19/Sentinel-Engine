@@ -35,7 +35,6 @@ void loop_validation_task(void *pv) {
 }
 
 
-
 void sync_time() {
     esp_sntp_setoperatingmode(SNTP_OPMODE_POLL);
     esp_sntp_setservername(0, "pool.ntp.org");
