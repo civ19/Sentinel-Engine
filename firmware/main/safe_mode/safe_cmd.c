@@ -37,7 +37,7 @@ void esp_cmd_conf(void) {
     esp_console_cmd_register(&clear_cmd);
 
 
-    /*const esp_console_cmd_t ota_cmd = {
+    const esp_console_cmd_t ota_cmd = {
         .command = "ota_force",
         .help =  "Bypasses safe moden lock to trigger an immediate OTA check if the current firmware is too bugged. Do ota_force.",
         .func = &do_force_ota,
@@ -97,12 +97,12 @@ static int do_reboot(int argc, char** argv) {
     }
 
     printf("User issued manual reboot. Rebooting ESP32...");
-    esp_restart(); //if manual then print esp restarted successfuly : reminder
+    esp_restart(); 
     
     return 0;
 
 }
-/*
+
 static int do_force_ota(int argc, char** argv) {
     if(argc > 1) {
         printf("Error: Invalid syntax. Simply type 'ota_force' with no extra arguments.\n");
@@ -130,7 +130,7 @@ static int do_force_ota(int argc, char** argv) {
 
 
 
-}*/
+}
 
 static int do_core_dump(int argc, char **argv) {
     if(argc > 1) {

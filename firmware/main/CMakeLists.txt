@@ -1,7 +1,7 @@
 idf_component_register(
     SRCS "main.c"
-         "sentinel_debug/debug.c"
-         "sentinel_debug/safe_cmd.c"
+         "safe_mode/debug.c"
+         "safe_mode/safe_cmd.c"
          "wdt/wdt.c"
          "abstractions/abstractions.c"
          "ota/ota.c"

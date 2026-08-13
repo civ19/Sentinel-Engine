@@ -9,14 +9,14 @@
 
 
 #include  "abstractions/abstractions.h"
-#include "sentinel_debug/debug.h"
+#include "safe_mode/debug.h"
 #include "wdt/wdt.h"
 #include "ota/ota.h"
 #include "tasks/ota_task.h"
 #include "nvs_store/nvs_store.h"
 #include "tasks/w_task.h"
 #include "tasks/server_task.h"
-#include "sentinel_debug/safe_cmd.h"
+#include "safe_mode/safe_cmd.h"
 #include "wifi/wifi.h"
 #include "ble_prov/prov_master.h"
 #include "esp_sntp.h"

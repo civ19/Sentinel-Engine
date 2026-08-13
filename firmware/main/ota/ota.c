@@ -5,6 +5,7 @@
 #include "esp_ota_ops.h"
 #include "esp_app_format.h"
 
+
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
@@ -24,12 +25,21 @@ static int status_code = 0;
 
 char* get_hash_header() {return global_hash_header;}
 
+
+esp_err_t sentinel_ota_abort(esp_https_ota_handle_t handle) { //wrapper for tests
+    #ifdef UNIT_TEST
+        return ESP_OK; 
+    #else 
+        return esp_https_ota_abort(handle);
+    #endif
+
+}
 esp_err_t updated_check(esp_https_ota_handle_t handle, int status) {
     assert(handle != 0);
     
     if(status == 304) {
         mutex_log('I', TAGS, "Backend returned 304: Firmware is already up to date.");
-        esp_err_t ret = esp_https_ota_abort(handle);
+        esp_err_t ret = sentinel_ota_abort(handle);
         if(ret != ESP_OK) {
             mutex_log('E', TAGS, "Failed to abort OTA when already up to date.");
             return ret;

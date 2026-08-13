@@ -6,7 +6,7 @@
 #include <assert.h>
 
 #include "abstractions/abstractions.h"
-#include "sentinel_debug/debug.h"
+#include "safe_mode/debug.h"
 
 
 static const char* TAG = "NVS";
@@ -70,7 +70,6 @@ bool isBootLoop(void) {
 }
 
 
-
 int32_t nvs_increment_cb(const char *key) {
 
     assert(nvs_h != 0);
@@ -80,7 +79,7 @@ int32_t nvs_increment_cb(const char *key) {
 
     //reading curr val:
     esp_err_t ret = nvs_get_i32(nvs_h, key, &cnt);
-    if(ret == ESP_ERR_NOT_FOUND) cnt = 1;
+    if(ret == ESP_ERR_NVS_NOT_FOUND) cnt = 1;
     else if(ret != ESP_OK) {
         mutex_log('E',TAG, "NVS read failed for key: %s. Error: %s", key, esp_err_to_name(ret));
         return -1;

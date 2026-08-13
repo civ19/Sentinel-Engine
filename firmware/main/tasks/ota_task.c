@@ -14,7 +14,7 @@
 
 #include "abstractions/abstractions.h"
 #include "ota/ota.h"
-#include "sentinel_debug/safe_cmd.h"
+#include "safe_mode/safe_cmd.h"
 #include "wdt/wdt.h"
 #include "ble_prov/nimble_gatt.h"
 
