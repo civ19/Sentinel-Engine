@@ -8,5 +8,8 @@
 #define MAX_SVR_LEN 64
 
 extern char server_ip[];
+extern char wifi_ssid[];
+extern char wifi_pass[];
+
 extern const struct ble_gatt_svc_def gatt_svr_svcs[];
 

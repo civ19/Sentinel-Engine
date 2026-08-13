@@ -15,7 +15,7 @@ static const char *TAG = "BLE_GATT";
 
 static int gatt_svr_access_cb(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctx, void* arg);
 
-static char wifi_ssid[MAX_SSID_LEN + 1]; //ssid, pass and broker containers
+static char wifi_ssid[MAX_SSID_LEN + 1]; //ssid, pass and server ip containers
 static char wifi_pass[MAX_PASS_LEN + 1];
 char server_ip[MAX_SVR_LEN + 1];
 

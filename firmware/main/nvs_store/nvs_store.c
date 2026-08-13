@@ -75,6 +75,10 @@ bool isBootLoop(void) {
     
 }
 
+void close_nvs(void) {
+    nvs_close(nvs_h);  //for main to use after were done with nvs
+}
+
 
 int32_t nvs_increment_cb(const char *key) {
 
