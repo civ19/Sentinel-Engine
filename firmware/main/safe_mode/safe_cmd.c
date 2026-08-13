@@ -106,8 +106,13 @@ static int do_reboot(int argc, char** argv) {
 }
 
 void force_ota_help(void) {
-    //get creds
-    str_nvs_get("wifi_ssid", wifi_ssid, sizeof(wifi_ssid));
+    esp_err_t ret;
+    //getting the creds
+    ret = str_nvs_get("wifi_ssid", wifi_ssid, sizeof(wifi_ssid));
+    ret= str_nvs_get("wifi_pass", wifi_ssid, sizeof(wifi_pass));
+    ret = str_nvs_get("server_ip", wifi_ssid, sizeof(server_ip));
+
+
     
 }
 static int do_force_ota(int argc, char** argv) {

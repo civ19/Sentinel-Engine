@@ -70,7 +70,7 @@ void str_nvs_set(const char* key, const char *val) { //2 helpers to make main an
 
 }
 
-void str_nvs_get(const char* key, char *out_buf, size_t max_size) {
+esp_err_t str_nvs_get(const char* key, char *out_buf, size_t max_size) {
     if(nvs_h == 0) init_nvs();
 
     assert(nvs_h != 0);
@@ -80,8 +80,12 @@ void str_nvs_get(const char* key, char *out_buf, size_t max_size) {
     size_t size = max_size;
 
     esp_err_t ret = nvs_get_str(nvs_h, key, out_buf, &size);
-    if(ret != ESP_OK) mutex_log('E',TAG, "NVS String Set failed. Error: %s", esp_err_to_name(ret));
+    if(ret != ESP_OK) {
+        mutex_log('E',TAG, "NVS String Set failed. Error: %s", esp_err_to_name(ret));
+        return ret;
+    }
 
+    return ret;
 
 }
 
