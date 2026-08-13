@@ -105,7 +105,8 @@ static int do_reboot(int argc, char** argv) {
 }
 
 void force_ota_help(void) {
-    esp_err_t ret = 
+    //get creds
+    str_nvs_get("wifi_ssid", )
     
 }
 static int do_force_ota(int argc, char** argv) {
