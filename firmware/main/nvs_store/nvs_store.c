@@ -56,6 +56,16 @@ esp_err_t init_nvs(void) { //initializing nvs
 
 }
 
+void str_nvs(const char* key, const char *val) {
+    assert(nvs_h != 0);
+
+    esp_err_t ret = nvs_set_str(nvs_h, key, val);
+    if(ret != ESP_OK) mutex_log('E',TAG, "NVS String Set failed. Error: %s", esp_err_to_name(ret));
+
+    nvs_commit(nvs_h);
+
+}
+
 void namespace_open(const char* name) {
     esp_err_t ret = nvs_open(name, NVS_READWRITE, &nvs_h);
     if (ret != ESP_OK) {
