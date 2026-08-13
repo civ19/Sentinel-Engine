@@ -13,7 +13,6 @@
 #include "tasks/server_task.h"
 
 
-#define SERVER_IP 16 
 #define OTA_URL_SIZE 256
 
 static const char *TAG = "OTA";
