@@ -7,9 +7,9 @@
 #define MAX_PASS_LEN 64
 #define MAX_SVR_LEN 64
 
-extern char server_ip[];
-extern char wifi_ssid[];
-extern char wifi_pass[];
+extern char wifi_ssid[MAX_SSID_LEN + 1]; //ssid, pass and server ip containers
+extern char wifi_pass[MAX_PASS_LEN + 1];
+extern char server_ip[MAX_SVR_LEN + 1];
 
 extern const struct ble_gatt_svc_def gatt_svr_svcs[];
 

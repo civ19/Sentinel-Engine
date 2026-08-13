@@ -13,6 +13,7 @@
 #include "tasks/ota_task.h"
 #include "debug.h"
 #include "nvs.h"
+#include "ble_prov/nimble_gatt.h"
 
 
 static const char* TAG = "CMD";
@@ -106,7 +107,7 @@ static int do_reboot(int argc, char** argv) {
 
 void force_ota_help(void) {
     //get creds
-    str_nvs_get("wifi_ssid", )
+    str_nvs_get("wifi_ssid", wifi_ssid, sizeof(wifi_ssid));
     
 }
 static int do_force_ota(int argc, char** argv) {
