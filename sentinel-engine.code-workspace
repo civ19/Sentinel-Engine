@@ -1,0 +1,15 @@
+{
+  "folders": [
+    {
+      "name": "Sentinel Engine - Production",
+      "path": "sentinel_firmware"
+    },
+    {
+      "name": "Sentinel Engine - Unit Tests",
+      "path": "sentinel_firmware/test_app"
+    }
+  ],
+  "settings": {
+    "C_Cpp.default.compileCommands": "${workspaceFolder:Sentinel Engine - Unit Tests}/build/compile_commands.json"
+  }
+}
