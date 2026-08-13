@@ -56,7 +56,7 @@ esp_err_t init_nvs(void) { //initializing nvs
 
 }
 
-void str_nvs(const char* key, const char *val) {
+void str_nvs_set(const char* key, const char *val) { //2 helpers to make main and safe_cmd use it as a black box. so we dont have to extern our handle just to set or get from nvs
     assert(nvs_h != 0);
 
     esp_err_t ret = nvs_set_str(nvs_h, key, val);
@@ -65,6 +65,19 @@ void str_nvs(const char* key, const char *val) {
     nvs_commit(nvs_h);
 
 }
+
+void str_nvs_get(const char* key, char *val, size_t max_size) {
+    assert(nvs_h != 0);
+
+    size_t size = max_size;
+
+    esp_err_t ret = nvs_get_str(nvs_h, key, val, &size);
+    if(ret != ESP_OK) mutex_log('E',TAG, "NVS String Set failed. Error: %s", esp_err_to_name(ret));
+
+    nvs_commit(nvs_h);
+
+}
+
 
 void namespace_open(const char* name) {
     esp_err_t ret = nvs_open(name, NVS_READWRITE, &nvs_h);

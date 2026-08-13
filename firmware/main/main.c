@@ -82,12 +82,12 @@ void app_main(void) {
     //gatekeeper
     mutex_log('I', TAG, "BLE active. Waiting for Wifi BT provisioning...");
     xEventGroupWaitBits(app_evt_group, WIFI_CONN_BIT, pdFALSE, pdTRUE, portMAX_DELAY);
-    str_nvs("wifi_ssid", wifi_ssid); //setting and committing changes to nvs because if the bits get set it mneans its successful
-    str_nvs("wifi_pass", wifi_pass);
+    str_nvs_set("wifi_ssid", wifi_ssid); //setting and committing changes to nvs because if the bits get set it mneans its successful
+    str_nvs_set("wifi_pass", wifi_pass);
 
     mutex_log('I', TAG, "Wifi set. Waiting for Server BT provisioning...");
     xEventGroupWaitBits(app_evt_group, SVR_CONN_BIT, pdFALSE, pdTRUE, portMAX_DELAY);
-    str_nvs("server_ip", server_ip); //committing server ip to nvs too
+    str_nvs_set("server_ip", server_ip); //committing server ip to nvs too
 
     mutex_log('I', TAG, "We are online!");
 
