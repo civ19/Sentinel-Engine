@@ -36,32 +36,23 @@ void loop_validation_task(void *pv) {
 }
 
 
-void sync_time() {
-    esp_sntp_setoperatingmode(SNTP_OPMODE_POLL);
-    esp_sntp_setservername(0, "pool.ntp.org");
-    esp_sntp_init();
-    
-    int retry = 0;
-    while (sntp_get_sync_status() == SNTP_SYNC_STATUS_RESET && ++retry < 10) {
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    }
-}
+
 
 
 void app_main(void) {
 
-    
-    reg_wifi_events();
     //check if we have no boot loops first. secuity checks
     app_evt_group = xEventGroupCreate();
     printMutex = xSemaphoreCreateMutex();
 
-    if((init_nvs() != ESP_OK)) esp_restart();    
+    CHECK_ERR(init_nvs(), esp_restart()); //if init nvs isnt esp_ok then restart
 
     if(isBootLoop()) {
         activate_safe_mode();
         return;
     } 
+    
+    reg_wifi_events();
 
     init_wifi_hardware();
     sync_time();

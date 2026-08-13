@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include "esp_vfs_dev.h"
+#include "esp_sntp.h"
 
 #include "nvs_store/nvs_store.h"
 #include "nvs.h"
@@ -94,7 +95,18 @@ void esp_rst_reason(void) {
     }
 }
 
-void init_console() {
+void sync_time(void) {
+    esp_sntp_setoperatingmode(SNTP_OPMODE_POLL);
+    esp_sntp_setservername(0, "pool.ntp.org");
+    esp_sntp_init();
+    
+    int retry = 0;
+    while (sntp_get_sync_status() == SNTP_SYNC_STATUS_RESET && ++retry < 10) {
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
+}
+
+void init_console(void) {
     
     esp_log_level_set("*", ESP_LOG_NONE); //silencing the uart
 
@@ -124,7 +136,7 @@ void init_console() {
     esp_console_start_repl(repl); //actually, well, running repl
 }
 
-void activate_safe_mode() {
+void activate_safe_mode(void) {
 
     esp_log_level_set("*", ESP_LOG_NONE); 
     printf("\033[2J\033[H"); 

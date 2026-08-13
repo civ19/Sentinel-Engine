@@ -14,7 +14,7 @@
 #include "debug.h"
 #include "nvs.h"
 #include "ble_prov/nimble_gatt.h"
-
+#include "wifi/wifi.h"
 
 static const char* TAG = "CMD";
 static bool isOtaRunning =  false;
@@ -105,14 +105,27 @@ static int do_reboot(int argc, char** argv) {
 
 }
 
-void force_ota_help(void) {
+BaseType_t force_ota_help(void) {
     esp_err_t ret;
+
+    char saved_ssid[MAX_SSID_LEN] = {0};
+    char saved_pass[MAX_PASS_LEN] = {0};
+    char saved_ip[MAX_SVR_LEN] = {0};
+
     //getting the creds
-    ret = str_nvs_get("wifi_ssid", wifi_ssid, sizeof(wifi_ssid));
-    ret= str_nvs_get("wifi_pass", wifi_ssid, sizeof(wifi_pass));
-    ret = str_nvs_get("server_ip", wifi_ssid, sizeof(server_ip));
+    CHECK_ERR(str_nvs_get("wifi_ssid", saved_ssid, sizeof(saved_ssid)), return ret);
+    CHECK_ERR(str_nvs_get("wifi_pass", saved_pass, sizeof(saved_pass)), return ret);
+    CHECK_ERR(str_nvs_get("server_ip", saved_ip, sizeof(saved_ip)), return ret);
 
+    reg_wifi_events();
+    init_wifi_hardware();
 
+    sync_time();
+
+    wifi_conf(saved_ssid, saved_pass);
+
+    BaseType_t task_ret = xTaskCreatePinnedToCore(perform_ota_task, "OtaForce", 8192, (void *)saved_ip, 2, NULL, 1);
+    return task_ret;
     
 }
 static int do_force_ota(int argc, char** argv) {
@@ -123,13 +136,8 @@ static int do_force_ota(int argc, char** argv) {
 
     if(isOtaRunning == false) {
         isOtaRunning = true;
-        BaseType_t ret = xTaskCreatePinnedToCore(perform_ota_task, "OtaTask", 8192, NULL, 2, NULL, 1);
-
-        if(ret != pdPASS) {
-            printf("Error: System failed to allocate necessary heap space for the thread.\n");
-            isOtaRunning = false;
-            return 1;
-        }
+        
+       CHECK_ERR(force_ota_help(), return 1);
     } 
     else {
         printf("Error: A firmware download task is already actively processing blocks.\n");
