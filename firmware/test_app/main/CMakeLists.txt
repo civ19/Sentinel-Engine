@@ -1,4 +1,3 @@
-# Get the absolute path to your root 'main' folder
 get_filename_component(ROOT_LOGIC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../main" ABSOLUTE)
 
 idf_component_register(
@@ -26,9 +25,9 @@ idf_component_register(
         esp_netif
         esp_event
         nvs_flash
-        console
-        driver
-        bt
     
     PRIV_REQUIRES unity
 )
+
+target_compile_definitions(${COMPONENT_LIB} PUBLIC UNIT_TEST)
+target_link_libraries(${COMPONENT_LIB} PRIVATE "-Wl,--wrap=sentinel_ota_abort")

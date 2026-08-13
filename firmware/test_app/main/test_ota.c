@@ -3,10 +3,7 @@
 #include "esp_https_ota.h"
 #include <assert.h>
 
-esp_err_t esp_https_ota_abort(esp_https_ota_handle_t handle) {
-    assert(handle != 0);
-    return ESP_OK;
-}
+
 
 TEST_CASE("Updated_Check() actually stops the OTA Update if no latest binary was found.", "[OTA]")
 {
@@ -17,3 +14,5 @@ TEST_CASE("Updated_Check() actually stops the OTA Update if no latest binary was
 
     TEST_ASSERT_EQUAL(ESP_OK, ret);
 }
+
+void force_link_ota(void) {}

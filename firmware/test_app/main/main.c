@@ -1,22 +1,17 @@
-//#include "unity.h"
-#include "esp_task_wdt.h"
+#include "unity.h"
+#include "unity_test_runner.h"
 #include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 
-
-int sum(int a, int b) {
-    return a+b;
-}
-/*
-TEST_CASE("Sum function works with positive ints", "[math]") 
-{
-    int result = sum(60,60);
-    TEST_ASSERT_EQUAL(15, result);
-}*/
+void force_link_nvs(void);
+void force_link_ota(void);
 
 void app_main(void) {
 
-    process_data(NULL);
+    force_link_nvs();
+    force_link_ota();
 
+
+    unity_run_menu();
+    
     
 }

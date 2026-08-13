@@ -18,6 +18,7 @@ void setup(void) { //starting from a clean slate. kinda like @BeforeEach then cl
 
 TEST_CASE("Boot loop detector returns TRUE after 3 sequential reboots, so we can run Safe mode", "[SAFE_MODE_TRIGGER]")
 {
+    setup();
     for(int i = 0; i<3; i++) nvs_increment_cb("boot_count");
 
     TEST_ASSERT_TRUE(isBootLoop());
@@ -25,8 +26,22 @@ TEST_CASE("Boot loop detector returns TRUE after 3 sequential reboots, so we can
 
 TEST_CASE("Boot loop detector returns FALSE for LESS than 3 sequential reboots, so we can run Safe mode", "[SAFE_MODE_TRIGGER]")
 {
-    nvs_increment_cb("boot+count"); //this will only be like 2. so this fits the condition
+    setup();
+    nvs_increment_cb("boot_count"); //this will only be like 2. so this fits the condition
 
     TEST_ASSERT_FALSE(isBootLoop());
 }
 
+TEST_CASE("NVS Increment CB increments it by 1 everytime its called.", "[NVS]")
+{
+    setup();
+    int32_t mock_n1 = nvs_increment_cb("boot_count");
+    int32_t mock_n2 = nvs_increment_cb("boot_count");
+
+    TEST_ASSERT_EQUAL(1, mock_n1);
+    TEST_ASSERT_EQUAL(2, mock_n2);
+
+}
+
+
+void force_link_nvs(void) {}
