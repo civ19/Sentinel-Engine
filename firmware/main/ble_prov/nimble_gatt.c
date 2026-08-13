@@ -3,6 +3,7 @@
 #include "esp_log.h"
 #include "host/ble_hs.h"
 #include <assert.h>
+#include "nvs.h"
 
 #include "abstractions/abstractions.h"
 #include "tasks/w_task.h"

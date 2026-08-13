@@ -48,15 +48,21 @@ esp_err_t init_nvs(void) { //initializing nvs
         return ret;
     }
 
-    ret = nvs_open("Debug", NVS_READWRITE, &nvs_h);
-    if (ret != ESP_OK) {
-        mutex_log('E', TAG, "NVS namespace open failed.");
-    }
+    namespace_open("Debug");
 
     assert(nvs_h != 0);
 
     return ret;
 
+}
+
+void namespace_open(const char* name) {
+    esp_err_t ret = nvs_open(name, NVS_READWRITE, &nvs_h);
+    if (ret != ESP_OK) {
+        mutex_log('E', TAG, "NVS namespace open failed.");
+    }
+
+    assert(nvs_h != 0);
 }
 
 bool isBootLoop(void) {
