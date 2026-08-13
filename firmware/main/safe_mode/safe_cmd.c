@@ -12,12 +12,13 @@
 #include "nvs_store/nvs_store.h"
 #include "tasks/ota_task.h"
 #include "debug.h"
+#include "nvs.h"
 
 
 static const char* TAG = "CMD";
 static bool isOtaRunning =  false;
 
-//static int do_force_ota(int argc, char** argv);
+static int do_force_ota(int argc, char** argv);
 static int do_reboot(int argc, char** argv);
 static int do_clear_nvs(int argc, char **argv);
 static int do_core_dump(int argc, char **argv);
@@ -43,7 +44,7 @@ void esp_cmd_conf(void) {
         .func = &do_force_ota,
     };
 
-    esp_console_cmd_register(&ota_cmd);*/
+    esp_console_cmd_register(&ota_cmd);
 
     const esp_console_cmd_t reboot_cmd = {
         .command = "reboot",
@@ -78,7 +79,7 @@ static int do_clear_nvs(int argc, char **argv) {
         printf("Error: Invalid syntax. Simply type 'clear' with no extra arguments.\n");
         return 1;
     }
-
+    
     mutex_log('I', TAG, "User issued manual clear override. Resetting nvs crash counter...");
     if (nvs_reset(1) == ESP_OK) {
         printf("NVS variables wiped and committed. Run 'reboot' to attempt normal startup.\n");
@@ -104,7 +105,7 @@ static int do_reboot(int argc, char** argv) {
 }
 
 void force_ota_help(void) {
-    namespace_open("Credentials"); //for storing credentiuals
+    esp_err_t ret = 
     
 }
 static int do_force_ota(int argc, char** argv) {
