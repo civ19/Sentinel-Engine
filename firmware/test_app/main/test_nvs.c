@@ -8,6 +8,8 @@ void setUp(void) { //starting from a clean slate. kinda like @BeforeEach then cl
     esp_err_t ret;
 
     ret = nvs_flash_deinit();
+    TEST_ASSERT_EQUAL_INT32(ESP_ERR_NVS_NOT_INITIALIZED, ret);
+    
     ret = nvs_flash_erase();
 
 
