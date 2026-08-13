@@ -103,6 +103,10 @@ static int do_reboot(int argc, char** argv) {
 
 }
 
+void force_ota_help(void) {
+    namespace_open("Credentials"); //for storing credentiuals
+    
+}
 static int do_force_ota(int argc, char** argv) {
     if(argc > 1) {
         printf("Error: Invalid syntax. Simply type 'ota_force' with no extra arguments.\n");

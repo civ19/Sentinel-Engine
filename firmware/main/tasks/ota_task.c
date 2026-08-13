@@ -26,14 +26,15 @@ static bool upd_success = true; //cjhecking if it successfully updated. if not, 
 
 void perform_ota_task(void *pv) {
 
-    assert(server_ip != NULL);
+    const char* target_ip = (pv != NULL) ? (const char*)pv : server_ip; //basically if theres an arg passed(from force ota) itll use that. if not, itll just use our normal server ip
+
+    assert(target_ip != NULL);
 
     wdt_ota_conf();
     esp_https_ota_handle_t ota_handle = NULL;
 
-    mutex_log('I', TAG, "DEBUG IN TASK - Value of passed IP: '%s'", server_ip);
 
-    esp_err_t b_ret = init_ota(&ota_handle, server_ip);
+    esp_err_t b_ret = init_ota(&ota_handle, target_ip);
     if(b_ret != ESP_OK) {
         set_ota_bool(false);
         vTaskDelete(NULL);
