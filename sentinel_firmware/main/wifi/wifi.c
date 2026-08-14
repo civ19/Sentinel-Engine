@@ -66,8 +66,7 @@ void reg_wifi_events() {
         ESP_ERROR_CHECK(err); 
     }
     
-    // It is safe to register handlers multiple times, but good practice to 
-    // just check if you really need to do this here.
+
     esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_callback, NULL, NULL);
     esp_event_handler_instance_register(IP_EVENT, ESP_EVENT_ANY_ID, &wifi_event_callback, NULL, NULL);
 }
@@ -76,7 +75,7 @@ void init_wifi_hardware() {
     esp_err_t err = esp_netif_init();
     if (err != ESP_OK && err != ESP_ERR_INVALID_STATE) ESP_ERROR_CHECK(err);
 
-    // Only create the interface if it hasn't been created yet
+    // Only creating the interface if it hasn't been created yet
     if (esp_netif_get_handle_from_ifkey("WIFI_STA_DEF") == NULL) {
         esp_netif_create_default_wifi_sta();
     }
